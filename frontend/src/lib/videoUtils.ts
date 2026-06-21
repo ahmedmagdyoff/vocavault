@@ -1,5 +1,5 @@
 export interface VideoProviderInfo {
-  provider: "youtube" | "tiktok" | "other";
+  provider: "youtube" | "tiktok" | "facebook" | "instagram-reel" | "instagram-post" | "other";
   videoId: string | null;
   embedUrl: string | null;
 }
@@ -17,7 +17,7 @@ export function parseVideoUrl(url: string): VideoProviderInfo {
     return {
       provider: "youtube",
       videoId: ytMatch[1],
-      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}`,
+      embedUrl: `https://youtube.com/embed/${ytMatch[1]}`,
     };
   }
 
@@ -29,7 +29,29 @@ export function parseVideoUrl(url: string): VideoProviderInfo {
     return {
       provider: "tiktok",
       videoId: tiktokMatch[1],
-      embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`,
+      embedUrl: `https://tiktok.com/embed/v2/${tiktokMatch[1]}`,
+    };
+  }
+
+  // Facebook
+  const fbMatch = url.match(
+    /facebook\.com\/.*\/videos\/([\d]+)|facebook\.com\/watch\/?\?v=([\d]+)|fb\.watch\/([a-zA-Z0-9_-]+)/i,
+  );
+  if (fbMatch) {
+    return {
+      provider: "facebook",
+      videoId: fbMatch[1] || fbMatch[2] || fbMatch[3],
+      embedUrl: `https://facebook.com/plugins/video.php?href=${encodeURIComponent(url)}&show_text=false&width=560`,
+    };
+  }
+
+  // Instagram
+  const igMatch = url.match(/instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/i);
+  if (igMatch && igMatch[1]) {
+    return {
+      provider: "instagram",
+      videoId: igMatch[1],
+      embedUrl: `https://instagram.com/p/${igMatch[1]}/embed`,
     };
   }
 
