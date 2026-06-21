@@ -6,6 +6,7 @@ import { Plus, Video as VideoIcon, Search, Trash2, Edit } from 'lucide-react';
 import { videosApi } from '@/lib/videos';
 import { Video } from '@/types';
 import toast from 'react-hot-toast';
+import VideoModal from '@/components/VideoModal';
 
 export default function VideosPage() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -16,6 +17,8 @@ export default function VideosPage() {
   const [newVideo, setNewVideo] = useState({ title: '', url: '', platform: 'other' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
 
   const detectPlatform = (url: string) => {
     const lowerUrl = url.toLowerCase();
@@ -150,10 +153,19 @@ export default function VideosPage() {
                 <tr key={video.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
-                      <VideoIcon className="mr-3 h-5 w-5 text-slate-400" />
-                      <a href={video.url} target="_blank" rel="noopener noreferrer" className="font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                      <button 
+                        onClick={() => setPlayingVideo({ url: video.url, title: video.title })}
+                        className="mr-3 flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600 transition-colors hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                        title="Play video"
+                      >
+                        <VideoIcon className="h-4 w-4" />
+                      </button>
+                      <button 
+                        onClick={() => setPlayingVideo({ url: video.url, title: video.title })}
+                        className="font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 text-left"
+                      >
                         {video.title}
-                      </a>
+                      </button>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-6 py-4">
@@ -200,6 +212,13 @@ export default function VideosPage() {
           </div>
         </div>
       )}
+
+      <VideoModal 
+        isOpen={!!playingVideo} 
+        onClose={() => setPlayingVideo(null)} 
+        videoUrl={playingVideo?.url || null}
+        title={playingVideo?.title}
+      />
     </div>
   );
 }

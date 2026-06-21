@@ -8,6 +8,7 @@ import { wordsApi } from '@/lib/words';
 import { categoriesApi } from '@/lib/categories';
 import { Word, Video as VideoType, Category } from '@/types';
 import Link from 'next/link';
+import VideoModal from '@/components/VideoModal';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -17,6 +18,7 @@ export default function DashboardPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(0);
+  const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -313,7 +315,11 @@ export default function DashboardPage() {
               ) : (
                 <div className="space-y-4">
                   {recentVideos.map(video => (
-                    <a key={video.id} href={video.url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 border-b border-slate-100 dark:border-slate-800/50 last:border-0 pb-3 last:pb-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 -mx-2 px-2 rounded-lg transition-colors">
+                    <button 
+                      key={video.id} 
+                      onClick={() => setPlayingVideo({ url: video.url, title: video.title })}
+                      className="group flex w-full text-left items-start gap-3 border-b border-slate-100 dark:border-slate-800/50 last:border-0 pb-3 last:pb-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 -mx-2 px-2 rounded-lg transition-colors"
+                    >
                       <div className="mt-1 flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
                         🎥
                       </div>
@@ -321,7 +327,7 @@ export default function DashboardPage() {
                         <p className="font-semibold text-slate-900 dark:text-white truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{video.title}</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{video.platform || 'Video Link'}</p>
                       </div>
-                    </a>
+                    </button>
                   ))}
                 </div>
               )}
@@ -330,6 +336,13 @@ export default function DashboardPage() {
 
         </div>
       </div>
+      
+      <VideoModal 
+        isOpen={!!playingVideo} 
+        onClose={() => setPlayingVideo(null)} 
+        videoUrl={playingVideo?.url || null}
+        title={playingVideo?.title}
+      />
     </div>
   );
 }
