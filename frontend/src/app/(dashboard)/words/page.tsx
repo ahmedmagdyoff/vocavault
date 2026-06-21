@@ -237,7 +237,7 @@ export default function WordsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredWords.map((word) => (
-            <div key={word.id} onClick={() => openDetailsModal(word)} className="group relative cursor-pointer rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <div key={word.id} onClick={() => openDetailsModal(word)} className="group relative cursor-pointer flex flex-col h-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
               <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100 flex gap-2">
                 <button onClick={(e) => openEditModal(word, e)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                   <Edit className="h-4 w-4" />
@@ -247,35 +247,37 @@ export default function WordsPage() {
                 </button>
               </div>
               
-              <span className="mb-4 inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+              <span className="mb-4 inline-flex w-fit rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
                 {word.category?.name || 'Unknown'}
               </span>
               <h3 className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">{word.word}</h3>
               <p className="mb-4 text-lg text-slate-600 dark:text-slate-400">{word.meaning}</p>
 
-              {word.forms && word.forms.length > 0 && (
-                <div className="mt-4 space-y-1">
-                  {word.forms.map(form => {
-                    let displayType = form.form_type;
-                    if (displayType === 'past_simple') displayType = 'Past';
-                    if (displayType === 'past_participle') displayType = 'Participle';
-                    if (displayType === 'present_participle') displayType = 'Ing';
-                    if (displayType === 'third_person_singular') displayType = '3rd Person';
-                    
-                    return (
-                      <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
-                        <span className="font-medium text-slate-800 dark:text-slate-200 capitalize">{displayType.replace(/_/g, ' ')}:</span> {form.value}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+              <div className="mt-auto">
+                {word.forms && word.forms.length > 0 && (
+                  <div className="mt-4 space-y-1">
+                    {word.forms.map(form => {
+                      let displayType = form.form_type;
+                      if (displayType === 'past_simple') displayType = 'Past';
+                      if (displayType === 'past_participle') displayType = 'Participle';
+                      if (displayType === 'present_participle') displayType = 'Ing';
+                      if (displayType === 'third_person_singular') displayType = '3rd Person';
+                      
+                      return (
+                        <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
+                          <span className="font-medium text-slate-800 dark:text-slate-200 capitalize">{displayType.replace(/_/g, ' ')}:</span> {form.value}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
 
-              {word.videos && word.videos.length > 0 && (
-                <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <p className="text-xs text-slate-500 mb-2">Found in {word.videos.length} videos</p>
-                </div>
-              )}
+                {word.videos && word.videos.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <p className="text-xs text-slate-500 mb-2">Found in {word.videos.length} videos</p>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -309,27 +311,6 @@ export default function WordsPage() {
               <div className="pt-2">
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Videos</label>
                 
-                {formData.video_ids.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {formData.video_ids.map(id => {
-                      const video = videos.find(v => v.id === id);
-                      if (!video) return null;
-                      return (
-                        <span key={id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-sm text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200">
-                          {video.title}
-                          <button 
-                            type="button" 
-                            onClick={() => setFormData({ ...formData, video_ids: formData.video_ids.filter(vid => vid !== id) })}
-                            className="ml-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 focus:outline-none"
-                          >
-                            &times;
-                          </button>
-                        </span>
-                      );
-                    })}
-                  </div>
-                )}
-
                 <input 
                   type="text" 
                   placeholder="Search videos..." 
@@ -398,12 +379,11 @@ export default function WordsPage() {
 
             {selectedWord.videos && selectedWord.videos.length > 0 && (
               <div className="mt-6">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">Related Videos</h3>
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">Found In</h3>
                 <div className="space-y-3">
                   {selectedWord.videos.map(video => (
                     <a key={video.id} href={video.url} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
                       <div className="font-medium text-slate-900 dark:text-white">{video.title}</div>
-                      <div className="text-sm text-blue-600 dark:text-blue-400 truncate">{video.url}</div>
                     </a>
                   ))}
                 </div>
