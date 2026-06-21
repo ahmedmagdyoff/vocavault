@@ -43,7 +43,6 @@ export interface Word {
 export interface AuthResponse {
   message: string;
   user: User;
-  token: string;
 }
 
 export interface ApiError {

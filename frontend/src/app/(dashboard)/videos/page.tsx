@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Plus, Video as VideoIcon, Search, Trash2, Edit } from 'lucide-react';
 import { videosApi } from '@/lib/videos';
@@ -15,6 +15,7 @@ export default function VideosPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [newVideo, setNewVideo] = useState({ title: '', url: '', platform: 'other' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const detectPlatform = (url: string) => {
     const lowerUrl = url.toLowerCase();
@@ -90,6 +91,16 @@ export default function VideosPage() {
     }
   };
 
+  const filteredVideos = useMemo(() => {
+    if (!searchQuery.trim()) return videos;
+    const q = searchQuery.toLowerCase();
+    return videos.filter(v =>
+      v.title.toLowerCase().includes(q) ||
+      v.platform.toLowerCase().includes(q) ||
+      v.url.toLowerCase().includes(q)
+    );
+  }, [videos, searchQuery]);
+
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between sm:flex-row sm:items-center">
@@ -107,6 +118,8 @@ export default function VideosPage() {
         <input
           type="text"
           placeholder="Search videos..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full border-0 bg-transparent py-2 pl-3 focus:ring-0 sm:text-sm dark:text-white"
         />
       </div>
@@ -126,12 +139,14 @@ export default function VideosPage() {
               <tr>
                 <td colSpan={4} className="px-6 py-4 text-center text-sm text-slate-500">Loading...</td>
               </tr>
-            ) : videos.length === 0 ? (
+            ) : filteredVideos.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-6 py-4 text-center text-sm text-slate-500">No videos found. Add one to get started!</td>
+                <td colSpan={4} className="px-6 py-4 text-center text-sm text-slate-500">
+                  {videos.length === 0 ? 'No videos found. Add one to get started!' : 'No videos matching your search.'}
+                </td>
               </tr>
             ) : (
-              videos.map((video) => (
+              filteredVideos.map((video) => (
                 <tr key={video.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
                   <td className="whitespace-nowrap px-6 py-4">
                     <div className="flex items-center">
