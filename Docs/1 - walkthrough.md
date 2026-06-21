@@ -45,6 +45,28 @@ All required API endpoints (15 routes) are implemented, using `JsonResource` to 
 
 ## 2. Frontend (Next.js 15)
 
+The frontend is now fully connected to the backend APIs, removing all mock data.
+
+### Dashboard (`/dashboard`)
+- Replaced hardcoded mock statistics with dynamic counts.
+- Concurrently fetches `getWords()`, `getVideos()`, and `getCategories()`.
+- Built-in loading states display while waiting for the API response.
+
+### Videos Management (`/dashboard/videos`)
+- Wired the table to the `videosApi.getVideos()` endpoint.
+- Created **"Add/Edit Video"** modal:
+  - **Automatic Platform Detection:** Automatically detects YouTube, TikTok, Facebook, or Instagram from the URL.
+  - Supports updating an existing video or adding a new one.
+  - Automatically submits to `videosApi.createVideo()` or `videosApi.updateVideo()` and refreshes the frontend state locally.
+- Integrated `videosApi.deleteVideo()` for live deletion and immediate UI removal.
+- Added visual loading overlays on buttons to prevent multiple submissions.
+
+### Words Management (`/dashboard/words`)
+- Hooked the grid up to `wordsApi.getWords()`.
+- Created **"Add/Edit Word"** Modal:
+  - Supports `Word`, `Meaning`, `Notes`, `Category` selection, and optional `Videos` multi-select.
+  - Fetches active categories from the database automatically (pre-seeded via `CategorySeeder`).
+  - Optimistically updates the list state after `createWord()` or `updateWord()`.
 The frontend project structure, pages, and core components have been generated based on the implementation plan.
 
 ### Project Setup & Design System
