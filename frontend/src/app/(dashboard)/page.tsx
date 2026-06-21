@@ -149,7 +149,7 @@ export default function DashboardPage() {
         <div className="lg:col-span-1 space-y-6">
           
           {/* 6. Learning Progress */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
             <div className="flex items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
               <TrendingUp className="w-5 h-5 text-blue-500 mr-2.5" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Library Health</h3>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
           </div>
 
           {/* 3. Category Distribution */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col h-full">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
             <div className="flex items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
               <BarChart2 className="w-5 h-5 text-purple-500 mr-2.5" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Category Distribution</h3>
