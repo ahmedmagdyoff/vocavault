@@ -51,7 +51,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
     modalWidthClass = 'max-w-5xl';
     videoContainerClass = 'aspect-video';
   } else if (provider === 'tiktok' || provider === 'instagram-reel') {
-    modalWidthClass = 'max-w-md';
+    modalWidthClass = 'max-w-[340px]'; // Tight fit to remove horizontal empty space
     videoContainerClass = 'aspect-[9/16]';
   } else if (provider === 'instagram-post') {
     modalWidthClass = 'max-w-lg';
