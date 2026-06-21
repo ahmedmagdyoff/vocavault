@@ -141,10 +141,6 @@ export default function LearnPage() {
     changeWord(randIdx);
   };
 
-  if (loading) {
-    return <div className="text-center text-slate-500 py-12">Loading Learning Mode...</div>;
-  }
-
   const currentWord = filteredWords[currentIndex];
 
   return (
@@ -194,8 +190,13 @@ export default function LearnPage() {
       </div>
 
       <div className="w-full max-w-3xl mx-auto">
-        {filteredWords.length === 0 ? (
-          <div className="text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 shadow-sm">
+        {loading ? (
+          <div className="bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-black/20 rounded-3xl p-8 md:p-12 border border-slate-200/60 dark:border-slate-800 min-h-[400px] flex flex-col items-center justify-center relative overflow-hidden">
+             <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-brand mb-4 dark:border-slate-700 dark:border-t-brand-dark"></div>
+             <p className="text-slate-500 font-medium">Loading flashcards...</p>
+          </div>
+        ) : filteredWords.length === 0 ? (
+          <div className="text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-12 shadow-sm min-h-[400px] flex flex-col items-center justify-center">
             <h3 className="text-xl font-medium text-slate-700 dark:text-slate-300">No words found</h3>
             <p className="mt-2 text-slate-500">Try adjusting your filters to find words to study.</p>
           </div>
