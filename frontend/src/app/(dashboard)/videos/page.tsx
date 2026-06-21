@@ -162,7 +162,7 @@ export default function VideosPage() {
                       </button>
                       <button 
                         onClick={() => setPlayingVideo({ url: video.url, title: video.title })}
-                        className="font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400 text-left"
+                        className="font-medium text-slate-900 hover:text-brand dark:text-white dark:hover:text-brand-dark text-left"
                       >
                         {video.title}
                       </button>
@@ -177,7 +177,7 @@ export default function VideosPage() {
                     {new Date(video.created_at).toLocaleDateString()}
                   </td>
                   <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                    <button onClick={() => openEditModal(video)} className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4">
+                    <button onClick={() => openEditModal(video)} className="text-brand hover:text-brand-hover dark:text-brand-dark dark:hover:text-brand-hover mr-4">
                       <Edit className="h-4 w-4" />
                     </button>
                     <button onClick={() => handleDelete(video.id)} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
@@ -192,8 +192,9 @@ export default function VideosPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)} />
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50">
             <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">{editingId ? 'Edit Video' : 'Add Video'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

@@ -241,7 +241,7 @@ export default function WordsPage() {
           {filteredWords.map((word) => (
             <div key={word.id} onClick={() => openDetailsModal(word)} className="group relative cursor-pointer flex flex-col h-full rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
               <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100 flex gap-2">
-                <button onClick={(e) => openEditModal(word, e)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                <button onClick={(e) => openEditModal(word, e)} className="text-slate-400 hover:text-brand dark:hover:text-brand-dark">
                   <Edit className="h-4 w-4" />
                 </button>
                 <button onClick={(e) => handleDelete(word.id, e)} className="text-slate-400 hover:text-red-600 dark:hover:text-red-400">
@@ -249,7 +249,7 @@ export default function WordsPage() {
                 </button>
               </div>
               
-              <span className="mb-4 inline-flex w-fit rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+              <span className="mb-4 inline-flex w-fit rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand-hover dark:bg-brand-dark/20 dark:text-brand-dark">
                 {word.category?.name || 'Unknown'}
               </span>
               <h3 className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">{word.word}</h3>
@@ -286,8 +286,9 @@ export default function WordsPage() {
       )}
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={() => setIsModalOpen(false)} />
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50 max-h-[90vh] overflow-y-auto scrollbar-custom">
             <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">{editingId ? 'Edit Word' : 'Add Word'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -332,7 +333,7 @@ export default function WordsPage() {
                             : formData.video_ids.filter(id => id !== video.id);
                           setFormData({ ...formData, video_ids: newVideoIds });
                         }}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4 dark:border-slate-700 dark:bg-slate-900"
+                        className="rounded border-slate-300 text-brand focus:ring-brand h-4 w-4 dark:border-slate-700 dark:bg-slate-900"
                       />
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{video.title}</span>
                     </label>
@@ -352,11 +353,12 @@ export default function WordsPage() {
       )}
 
       {isDetailsModalOpen && selectedWord && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setIsDetailsModalOpen(false)}>
-          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm transition-opacity" onClick={() => setIsDetailsModalOpen(false)} />
+          <div className="relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50 max-h-[90vh] overflow-y-auto scrollbar-custom">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <span className="mb-2 inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                <span className="mb-2 inline-block rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-medium text-brand-hover dark:bg-brand-dark/20 dark:text-brand-dark">
                   {selectedWord.category?.name || 'Unknown'}
                 </span>
                 <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{selectedWord.word}</h2>

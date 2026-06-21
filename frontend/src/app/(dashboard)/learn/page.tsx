@@ -159,12 +159,12 @@ export default function LearnPage() {
         <div className="flex gap-4 bg-white dark:bg-slate-900 px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-800 shadow-sm">
           <div className="text-center">
             <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Today</div>
-            <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{dailyReviewed}</div>
+            <div className="text-lg font-bold text-brand dark:text-brand-dark">{dailyReviewed}</div>
           </div>
           <div className="w-px bg-slate-200 dark:bg-slate-700"></div>
           <div className="text-center">
             <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">Total</div>
-            <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{totalReviewed}</div>
+            <div className="text-lg font-bold text-brand dark:text-brand-dark">{totalReviewed}</div>
           </div>
         </div>
       </div>
@@ -218,8 +218,8 @@ export default function LearnPage() {
                 
                 {/* Meaning Section */}
                 {isMeaningRevealed ? (
-                  <div className="bg-blue-50/50 dark:bg-slate-800/50 rounded-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-300 border border-blue-100 dark:border-slate-700">
-                    <span className="mb-3 inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-bold uppercase tracking-wider text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                  <div className="bg-brand/5 dark:bg-slate-800/50 rounded-2xl p-6 text-center animate-in fade-in zoom-in-95 duration-300 border border-brand/20 dark:border-slate-700">
+                    <span className="mb-3 inline-flex w-fit rounded-full bg-brand/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-hover dark:bg-brand-dark/20 dark:text-brand-dark">
                       {currentWord.category?.name || 'Unknown'}
                     </span>
                     <p className="text-3xl text-slate-800 dark:text-slate-200 font-medium">{currentWord.meaning}</p>
@@ -295,7 +295,7 @@ export default function LearnPage() {
               <Button 
                 onClick={handleRandom} 
                 size="lg" 
-                className="h-14 px-8 text-lg font-bold shadow-md shadow-blue-500/20"
+                className="h-14 px-8 text-lg font-bold shadow-md shadow-brand/20"
                 disabled={filteredWords.length <= 1}
               >
                 <Shuffle className="mr-2 h-5 w-5" /> Random

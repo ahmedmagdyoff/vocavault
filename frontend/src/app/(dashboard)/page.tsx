@@ -58,7 +58,7 @@ export default function DashboardPage() {
   const wordsWithForms = words.filter(w => w.forms && w.forms.length > 0).length;
 
   const stats = [
-    { name: 'Total Words', value: loading ? '...' : totalWords.toString(), icon: BookOpen, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400' },
+    { name: 'Total Words', value: loading ? '...' : totalWords.toString(), icon: BookOpen, color: 'text-brand bg-brand/10 dark:bg-brand-dark/20 dark:text-brand-dark' },
     { name: 'Total Videos', value: loading ? '...' : totalVideos.toString(), icon: VideoIcon, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400' },
     { name: 'Categories', value: loading ? '...' : totalCategories.toString(), icon: FolderTree, color: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400' },
     { name: 'Words With Forms', value: loading ? '...' : wordsWithForms.toString(), icon: FileText, color: 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400' },
@@ -100,12 +100,12 @@ export default function DashboardPage() {
     <div className="pb-12 space-y-6">
       
       {/* 1. Welcome Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-blue-700 to-indigo-800 dark:from-blue-900 dark:to-indigo-950 rounded-2xl p-8 text-white shadow-md">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-gradient-to-r from-brand to-indigo-800 dark:from-brand-hover dark:to-slate-900 rounded-2xl p-8 text-white shadow-md">
         <div>
           <h1 className="text-3xl font-bold mb-2">
             Welcome back, {user?.name?.split(' ')[0] || 'Learner'} 👋
           </h1>
-          <p className="text-blue-100 opacity-90">
+          <p className="text-white/90 opacity-90">
             Track your vocabulary progress and jump right back into learning.
           </p>
         </div>
@@ -117,7 +117,7 @@ export default function DashboardPage() {
           <div className="w-px h-12 bg-white/20"></div>
           <div className="text-center">
             <div className="flex items-center justify-center gap-1.5 text-blue-100 text-sm font-medium mb-1 uppercase tracking-widest"><Target className="w-4 h-4 text-emerald-400" /> Library</div>
-            <div className="text-3xl font-black">{loading ? '-' : totalWords} <span className="text-lg font-medium text-blue-200">Words</span></div>
+            <div className="text-3xl font-black">{loading ? '-' : totalWords} <span className="text-lg font-medium text-white/80">Words</span></div>
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
           {/* 6. Learning Progress */}
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800 flex flex-col">
             <div className="flex items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
-              <TrendingUp className="w-5 h-5 text-blue-500 mr-2.5" />
+              <TrendingUp className="w-5 h-5 text-brand mr-2.5" />
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">Library Health</h3>
             </div>
             
@@ -165,7 +165,7 @@ export default function DashboardPage() {
                     <span className="font-bold text-slate-900 dark:text-white">{pctForms}%</span>
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2.5 dark:bg-slate-800">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${pctForms}%` }}></div>
+                    <div className="bg-brand h-2.5 rounded-full" style={{ width: `${pctForms}%` }}></div>
                   </div>
                 </div>
 
@@ -277,10 +277,10 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
               <div className="flex justify-between items-center mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div className="flex items-center">
-                  <Clock className="w-5 h-5 text-blue-500 mr-2.5" />
+                  <Clock className="w-5 h-5 text-brand mr-2.5" />
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Words</h3>
                 </div>
-                <Link href="/words" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700">View All</Link>
+                <Link href="/words" className="text-sm font-semibold text-brand dark:text-brand-dark hover:text-brand-hover">View All</Link>
               </div>
               
               {loading ? <div className="text-center text-slate-400 py-4">Loading...</div> : recentWords.length === 0 ? (
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                   <VideoIcon className="w-5 h-5 text-emerald-500 mr-2.5" />
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white">Recent Videos</h3>
                 </div>
-                <Link href="/videos" className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700">View All</Link>
+                <Link href="/videos" className="text-sm font-semibold text-brand dark:text-brand-dark hover:text-brand-hover">View All</Link>
               </div>
               
               {loading ? <div className="text-center text-slate-400 py-4">Loading...</div> : recentVideos.length === 0 ? (

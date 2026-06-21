@@ -61,7 +61,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-sm dark:bg-slate-800">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Create an account</h1>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Join VocaVault today</p>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Join <span className="text-brand dark:text-brand-dark font-semibold">VocaVault</span> today</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -104,7 +104,7 @@ export default function RegisterPage() {
 
         <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Already have an account?{' '}
-          <Link href="/login" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+          <Link href="/login" className="font-medium text-brand hover:text-brand-hover dark:text-brand-dark dark:hover:text-brand-hover">
             Sign in
           </Link>
         </p>

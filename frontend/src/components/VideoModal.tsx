@@ -44,7 +44,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
       />
       
       {/* Modal content */}
-      <div className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl dark:bg-slate-900 overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-4xl rounded-2xl bg-white shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50 overflow-hidden flex flex-col max-h-[90vh]">
         <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800">
           <h3 className="font-semibold text-slate-900 dark:text-white truncate pr-4">
             {title || 'Video Player'}
@@ -72,7 +72,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
                 href={videoUrl} 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover transition-colors"
               >
                 Open in new tab
               </a>
