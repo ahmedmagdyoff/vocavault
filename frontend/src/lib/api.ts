@@ -12,6 +12,9 @@ const apiClient = axios.create({
     Accept: 'application/json',
   },
   withCredentials: true, // Crucial for Sanctum SPA Auth
+  withXSRFToken: true,   // Crucial for cross-origin XSRF token attachment
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
 });
 
 // Interceptor to handle 401 Unauthorized

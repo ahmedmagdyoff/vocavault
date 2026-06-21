@@ -1,12 +1,9 @@
-import { fetchApi, apiConfig } from './api';
+import apiClient, { fetchApi } from './api';
 import { AuthResponse, User } from '@/types';
-import axios from 'axios';
 
 // Initialize CSRF cookie
 export const initCsrf = async () => {
-  return axios.get(`${apiConfig.baseURL}/sanctum/csrf-cookie`, {
-    withCredentials: true,
-  });
+  return apiClient.get('/sanctum/csrf-cookie');
 };
 
 export const auth = {
