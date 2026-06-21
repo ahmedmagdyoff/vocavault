@@ -274,7 +274,7 @@ export default function WordsPage() {
 
                 {word.videos && word.videos.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <p className="text-xs text-slate-500 mb-2">Found in {word.videos.length} videos</p>
+                    <p className="text-xs text-slate-500 mb-2">Found in {word.videos.length} video{word.videos.length === 1 ? '' : 's'}</p>
                   </div>
                 )}
               </div>
@@ -369,7 +369,9 @@ export default function WordsPage() {
                 <div className="grid grid-cols-2 gap-3">
                   {selectedWord.forms.map(form => (
                     <div key={form.id} className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <div className="text-xs text-slate-500 dark:text-slate-400 capitalize mb-1">{form.form_type.replace(/_/g, ' ')}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                        {form.form_type.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                      </div>
                       <div className="font-medium text-slate-900 dark:text-white">{form.value}</div>
                     </div>
                   ))}
