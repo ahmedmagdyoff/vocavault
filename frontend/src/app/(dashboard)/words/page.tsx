@@ -19,12 +19,12 @@ export default function WordsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [videoSearchQuery, setVideoSearchQuery] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
     word: '',
     meaning: '',
-    notes: '',
     category_id: '',
     video_ids: [] as number[],
   });
@@ -64,7 +64,8 @@ export default function WordsPage() {
 
   const openAddModal = () => {
     setEditingId(null);
-    setFormData({ word: '', meaning: '', notes: '', category_id: '', video_ids: [] });
+    setFormData({ word: '', meaning: '', category_id: '', video_ids: [] });
+    setVideoSearchQuery('');
     setIsModalOpen(true);
   };
 
@@ -73,10 +74,10 @@ export default function WordsPage() {
     setFormData({
       word: word.word,
       meaning: word.meaning,
-      notes: word.notes || '',
       category_id: word.category_id ? word.category_id.toString() : '',
       video_ids: word.videos?.map(v => v.id) || [],
     });
+    setVideoSearchQuery('');
     setIsModalOpen(true);
   };
 
@@ -106,9 +107,6 @@ export default function WordsPage() {
     }
   };
 
-  const handleVideoSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
-    setFormData({ ...formData, video_ids: value });
   };
 
   return (
@@ -162,12 +160,6 @@ export default function WordsPage() {
               </span>
               <h3 className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">{word.word}</h3>
               <p className="mb-4 text-lg text-slate-600 dark:text-slate-400">{word.meaning}</p>
-              
-              {word.notes && (
-                <div className="mt-4 rounded-md bg-slate-50 p-3 text-sm text-slate-600 dark:bg-slate-800/50 dark:text-slate-400">
-                  <span className="font-medium">Note:</span> {word.notes}
-                </div>
-              )}
 
               {word.videos && word.videos.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -193,10 +185,6 @@ export default function WordsPage() {
                 <textarea required rows={2} value={formData.meaning} onChange={e => setFormData({...formData, meaning: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Notes (Optional)</label>
-                <textarea rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
                 <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
                   <option value="">Select Category</option>
@@ -206,12 +194,35 @@ export default function WordsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Videos (Optional - Hold Ctrl/Cmd to multi-select)</label>
-                <select multiple value={formData.video_ids.map(String)} onChange={handleVideoSelect} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
-                  {videos.map(video => (
-                    <option key={video.id} value={video.id}>{video.title}</option>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Videos</label>
+                <input 
+                  type="text" 
+                  placeholder="Search videos..." 
+                  value={videoSearchQuery}
+                  onChange={(e) => setVideoSearchQuery(e.target.value)}
+                  className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                />
+                <div className="mt-2 max-h-40 overflow-y-auto rounded-md border border-slate-200 p-2 dark:border-slate-800">
+                  {videos.filter(v => v.title.toLowerCase().includes(videoSearchQuery.toLowerCase())).map(video => (
+                    <label key={video.id} className="flex items-center space-x-2 py-1 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={formData.video_ids.includes(video.id)}
+                        onChange={(e) => {
+                          const newVideoIds = e.target.checked 
+                            ? [...formData.video_ids, video.id] 
+                            : formData.video_ids.filter(id => id !== video.id);
+                          setFormData({ ...formData, video_ids: newVideoIds });
+                        }}
+                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900"
+                      />
+                      <span className="text-sm text-slate-700 dark:text-slate-300">{video.title}</span>
+                    </label>
                   ))}
-                </select>
+                  {videos.filter(v => v.title.toLowerCase().includes(videoSearchQuery.toLowerCase())).length === 0 && (
+                    <p className="text-sm text-slate-500 dark:text-slate-400 p-2 text-center">No videos found.</p>
+                  )}
+                </div>
               </div>
               <div className="mt-6 flex justify-end gap-3">
                 <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>

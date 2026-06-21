@@ -24,7 +24,6 @@ class WordRequest extends FormRequest
         return [
             'word' => ['required', 'string', 'max:255'],
             'meaning' => ['required', 'string'],
-            'notes' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
             'video_ids' => ['nullable', 'array'],
             'video_ids.*' => ['exists:videos,id'],

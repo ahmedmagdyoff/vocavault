@@ -64,8 +64,9 @@ The frontend is now fully connected to the backend APIs, removing all mock data.
 ### Words Management (`/dashboard/words`)
 - Hooked the grid up to `wordsApi.getWords()`.
 - Created **"Add/Edit Word"** Modal:
-  - Supports `Word`, `Meaning`, `Notes`, `Category` selection, and optional `Videos` multi-select.
+  - Supports `Word`, `Meaning`, and `Category` selection. Note: The `Notes` field has been completely removed across the stack per requirements.
   - Fetches active categories from the database automatically (pre-seeded via `CategorySeeder`).
+  - **Custom Video Selector:** Replaced the native `select multiple` element with a polished, searchable checkbox/tag list that allows fast filtering and tagging of videos.
   - Optimistically updates the list state after `createWord()` or `updateWord()`.
 The frontend project structure, pages, and core components have been generated based on the implementation plan.
 

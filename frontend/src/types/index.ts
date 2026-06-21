@@ -27,7 +27,6 @@ export interface Word {
   category_id: number;
   word: string;
   meaning: string;
-  notes?: string;
   created_at: string;
   updated_at: string;
   category?: Category;
