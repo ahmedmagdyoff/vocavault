@@ -1,157 +1,164 @@
-# VocaVault — Laravel Backend Structure & Migrations
+# VocaVault — Next.js Frontend Implementation Plan
 
-Create the Laravel 12 backend for VocaVault, a vocabulary learning app where users save words from videos, categorize them, and build a personal vocabulary library.
+Build the complete Next.js 15 frontend for VocaVault with App Router, TypeScript, Tailwind CSS, dark mode, Arabic/English support, and full Sanctum API integration.
 
 ## Proposed Changes
 
-### 1. Laravel Project Scaffolding
+### 1. Project Scaffolding
 
-#### [NEW] `backend/` — Laravel 12 project
-
-- Scaffold a new Laravel 12 project inside `backend/` using `composer create-project`
-- Install Laravel Sanctum (ships with Laravel 12 by default)
-- Configure `.env` for MySQL connection
+#### [NEW] `frontend/` — Next.js 15 project
+- Scaffold with `create-next-app` using App Router, TypeScript, Tailwind CSS
+- Install dependencies: `react-hot-toast`, `lucide-react` (icons)
 
 ---
 
-### 2. Database Migrations
+### 2. Design System & Global Styles
 
-Create migrations matching the database structure from the README:
+#### [NEW] `frontend/src/app/globals.css`
+- Tailwind base with custom CSS variables for light/dark themes
+- Color palette: Blue primary (#2563eb), gray surfaces, white background
+- Dark mode: slate backgrounds, blue accents
+- Typography: Inter font from Google Fonts
+- Smooth transitions on theme toggle
 
-#### [NEW] `videos` migration
-| Field      | Type      | Notes                        |
-|------------|-----------|------------------------------|
-| id         | bigint    | Primary key                  |
-| user_id    | bigint    | FK → users, cascading delete |
-| title      | varchar   |                              |
-| url        | text      |                              |
-| platform   | varchar   | youtube, tiktok, facebook, instagram, other |
-| timestamps |           |                              |
-
-#### [NEW] `categories` migration
-| Field | Type    | Notes                       |
-|-------|---------|-----------------------------|
-| id    | bigint  | Primary key                 |
-| name  | varchar | Unique, no timestamps       |
-
-#### [NEW] `words` migration
-| Field       | Type    | Notes                        |
-|-------------|---------|------------------------------|
-| id          | bigint  | Primary key                  |
-| user_id     | bigint  | FK → users, cascading delete |
-| category_id | bigint  | FK → categories, cascading delete |
-| word        | varchar |                              |
-| meaning     | text    |                              |
-| notes       | text    | Nullable                     |
-| timestamps  |         |                              |
-
-#### [NEW] `video_words` pivot migration
-| Field    | Type   | Notes                        |
-|----------|--------|------------------------------|
-| video_id | bigint | FK → videos, cascading delete|
-| word_id  | bigint | FK → words, cascading delete |
-| Composite primary key on (video_id, word_id) |
+#### [NEW] `frontend/tailwind.config.ts`
+- Extend colors with design tokens
+- Dark mode via `class` strategy
 
 ---
 
-### 3. Eloquent Models
+### 3. API Service Layer
 
-#### [NEW] `app/Models/Video.php`
-- `belongsTo` User
-- `belongsToMany` Word (via `video_words` pivot)
-- Fillable: `title`, `url`, `platform`
+#### [NEW] `frontend/src/lib/api.ts`
+- Axios-like fetch wrapper with base URL, token injection, JSON headers
+- Automatic 401 handling (redirect to login)
 
-#### [NEW] `app/Models/Category.php`
-- `hasMany` Word
-- Fillable: `name`
-- No timestamps
+#### [NEW] `frontend/src/lib/auth.ts`
+- `register()`, `login()`, `logout()`, `getUser()` API calls
 
-#### [NEW] `app/Models/Word.php`
-- `belongsTo` User
-- `belongsTo` Category
-- `belongsToMany` Video (via `video_words` pivot)
-- Fillable: `word`, `meaning`, `notes`, `category_id`
+#### [NEW] `frontend/src/lib/videos.ts`
+- `getVideos()`, `createVideo()`, `updateVideo()`, `deleteVideo()`
 
-#### [MODIFY] `app/Models/User.php`
-- Add `hasMany` Video
-- Add `hasMany` Word
+#### [NEW] `frontend/src/lib/words.ts`
+- `getWords()`, `createWord()`, `updateWord()`, `deleteWord()`
 
----
+#### [NEW] `frontend/src/lib/categories.ts`
+- `getCategories()`
 
-### 4. API Controllers
-
-#### [NEW] `app/Http/Controllers/Api/AuthController.php`
-- `register()` — POST `/api/register`
-- `login()` — POST `/api/login`
-- `logout()` — POST `/api/logout` (auth required)
-- `user()` — GET `/api/user` (auth required)
-
-#### [NEW] `app/Http/Controllers/Api/VideoController.php`
-- `index()` — GET `/api/videos` — List user's videos
-- `store()` — POST `/api/videos`
-- `update()` — PUT `/api/videos/{id}`
-- `destroy()` — DELETE `/api/videos/{id}`
-
-#### [NEW] `app/Http/Controllers/Api/CategoryController.php`
-- `index()` — GET `/api/categories` — List all categories
-
-#### [NEW] `app/Http/Controllers/Api/WordController.php`
-- `index()` — GET `/api/words` — List user's words with category & videos
-- `store()` — POST `/api/words` — Create word + attach videos
-- `update()` — PUT `/api/words/{id}` — Update word + sync videos
-- `destroy()` — DELETE `/api/words/{id}`
+#### [NEW] `frontend/src/types/index.ts`
+- TypeScript interfaces: `User`, `Video`, `Category`, `Word`, `ApiResponse`
 
 ---
 
-### 5. Form Request Validation
+### 4. Auth Context & Protection
 
-#### [NEW] `app/Http/Requests/RegisterRequest.php`
-- name: required, string, max:255
-- email: required, email, unique:users
-- password: required, min:8, confirmed
+#### [NEW] `frontend/src/contexts/AuthContext.tsx`
+- React context providing `user`, `login()`, `register()`, `logout()`, `loading`
+- Token stored in `localStorage`
+- Auto-fetch user on mount if token exists
 
-#### [NEW] `app/Http/Requests/LoginRequest.php`
-- email: required, email
-- password: required
-
-#### [NEW] `app/Http/Requests/VideoRequest.php`
-- title: required, string, max:255
-- url: required, url
-- platform: required, in:youtube,tiktok,facebook,instagram,other
-
-#### [NEW] `app/Http/Requests/WordRequest.php`
-- word: required, string, max:255
-- meaning: required, string
-- notes: nullable, string
-- category_id: required, exists:categories,id
-- video_ids: nullable, array
-- video_ids.*: exists:videos,id
+#### [NEW] `frontend/src/components/ProtectedRoute.tsx`
+- Wraps authenticated pages, redirects to `/login` if not authenticated
 
 ---
 
-### 6. API Routes
+### 5. Layout & Navigation
 
-#### [MODIFY] `routes/api.php`
-- Public: `POST /register`, `POST /login`
-- Protected (Sanctum middleware): `POST /logout`, `GET /user`, all video/category/word routes
+#### [NEW] `frontend/src/app/layout.tsx`
+- Root layout with Inter font, dark mode class on `<html>`, AuthProvider
+
+#### [NEW] `frontend/src/components/Sidebar.tsx`
+- Responsive sidebar with navigation links: Dashboard, Videos, Words
+- User info at bottom, logout button
+- Collapsible on mobile (hamburger menu)
+- Active link highlighting
+
+#### [NEW] `frontend/src/components/DarkModeToggle.tsx`
+- Sun/Moon icon toggle, persisted in localStorage
+
+#### [NEW] `frontend/src/components/LanguageToggle.tsx`
+- AR/EN toggle, switches UI text direction (RTL/LTR)
 
 ---
 
-### 7. Database Seeder
+### 6. Pages
 
-#### [NEW] `database/seeders/CategorySeeder.php`
-- Seed default categories: Noun, Verb, Adjective, Adverb, Pronoun, Preposition, Conjunction, Interjection, Expression, Phrasal Verb
+#### [NEW] `frontend/src/app/login/page.tsx` — Login Page
+- Email + password form
+- Link to register
+- Toast on error/success
+- Redirect to dashboard on success
+
+#### [NEW] `frontend/src/app/register/page.tsx` — Register Page
+- Name, email, password, confirm password form
+- Link to login
+- Toast notifications
+- Redirect to dashboard on success
+
+#### [NEW] `frontend/src/app/(dashboard)/layout.tsx` — Dashboard Layout
+- Sidebar + main content area
+- Protected route wrapper
+- Responsive: sidebar collapses on mobile
+
+#### [NEW] `frontend/src/app/(dashboard)/page.tsx` — Dashboard
+- 3 stat cards: Total Words, Total Videos, Total Categories
+- Fetches counts from API
+- Animated counters
+
+#### [NEW] `frontend/src/app/(dashboard)/videos/page.tsx` — Videos Page
+- Table/card list of user's videos
+- Add Video button → modal
+- Edit/Delete actions per video
+- Platform badges (YouTube, TikTok, etc.)
+
+#### [NEW] `frontend/src/app/(dashboard)/words/page.tsx` — Words Page
+- Table/card list of user's words
+- Add Word button → modal with category dropdown and video multi-select
+- Edit/Delete actions per word
+- Category badges
+- Linked videos shown as tags
 
 ---
 
-### 8. CORS & Sanctum Configuration
+### 7. Shared Components
 
-#### [MODIFY] `.env`
-- Set `SANCTUM_STATEFUL_DOMAINS` and `SESSION_DOMAIN` for Next.js frontend
-- Configure `FRONTEND_URL`
+#### [NEW] `frontend/src/components/ui/Button.tsx`
+- Variants: primary, secondary, danger, ghost
+- Loading state with spinner
 
-#### [MODIFY] `config/cors.php`
-- Allow `localhost:3000` (Next.js dev server)
+#### [NEW] `frontend/src/components/ui/Input.tsx`
+- Styled input with label, error message support
+
+#### [NEW] `frontend/src/components/ui/Modal.tsx`
+- Animated overlay modal for create/edit forms
+
+#### [NEW] `frontend/src/components/ui/Badge.tsx`
+- Colored badge for platforms and categories
+
+#### [NEW] `frontend/src/components/ui/Card.tsx`
+- Stat card with icon, label, value
+
+#### [NEW] `frontend/src/components/ui/EmptyState.tsx`
+- Friendly empty state with icon and call-to-action
+
+---
+
+### 8. Internationalization (i18n)
+
+#### [NEW] `frontend/src/lib/i18n.ts`
+- Simple translation dictionary for EN/AR
+- `useTranslation()` hook
+- RTL direction toggle on `<html dir="rtl">`
+
+#### [NEW] `frontend/src/locales/en.ts` & `frontend/src/locales/ar.ts`
+- Translation strings for all UI text
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> **Backend API completion**: The Videos, Categories, and Words API controllers haven't been created yet on the Laravel side. The frontend will call these endpoints — should I also create the remaining backend controllers as part of this task, or will that be a separate step?
 
 ---
 
@@ -159,12 +166,12 @@ Create migrations matching the database structure from the README:
 
 ### Automated Tests
 ```bash
-cd backend
-php artisan migrate --seed
-php artisan route:list --path=api
+cd frontend
+npm run build
 ```
 
 ### Manual Verification
-- Confirm all migrations run without errors
-- Confirm categories are seeded
-- Confirm route list matches the API spec from the README
+- Run `npm run dev` and verify all pages render
+- Test login/register flow
+- Test dark mode toggle
+- Test responsive layout on mobile viewport
