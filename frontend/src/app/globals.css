@@ -15,11 +15,9 @@
 }
 
 body {
-  background-color: theme('colors.slate.50');
-  color: theme('colors.slate.900');
+  @apply bg-slate-50 text-slate-900;
 }
 
 .dark body {
-  background-color: theme('colors.slate.950');
-  color: theme('colors.slate.50');
+  @apply bg-slate-950 text-slate-50;
 }
