@@ -260,10 +260,10 @@ export default function WordsPage() {
                   <div className="mt-4 space-y-1">
                     {word.forms.map(form => {
                       let displayType = form.form_type;
-                      if (displayType === 'past_simple') displayType = 'Past';
-                      if (displayType === 'past_participle') displayType = 'Participle';
-                      if (displayType === 'present_participle') displayType = 'Ing';
-                      if (displayType === 'third_person_singular') displayType = '3rd Person';
+                      if (displayType === 'past_simple') displayType = 'Past Simple';
+                      if (displayType === 'past_participle') displayType = 'Past Participle';
+                      if (displayType === 'present_participle') displayType = 'Present Participle';
+                      if (displayType === 'third_person_singular') displayType = 'Third Person Singular';
                       
                       return (
                         <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
