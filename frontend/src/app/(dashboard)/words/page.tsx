@@ -155,7 +155,6 @@ export default function WordsPage() {
     let fields: { key: string; label: string }[] = [];
     if (categoryName === 'Verb') {
       fields = [
-        { key: 'base_form', label: 'Base Form' },
         { key: 'past_simple', label: 'Past Simple' },
         { key: 'past_participle', label: 'Past Participle' },
         { key: 'present_participle', label: 'Present Participle' },
@@ -163,12 +162,10 @@ export default function WordsPage() {
       ];
     } else if (categoryName === 'Noun') {
       fields = [
-        { key: 'singular', label: 'Singular' },
         { key: 'plural', label: 'Plural' },
       ];
     } else if (categoryName === 'Adjective') {
       fields = [
-        { key: 'positive', label: 'Positive' },
         { key: 'comparative', label: 'Comparative' },
         { key: 'superlative', label: 'Superlative' },
       ];
@@ -177,11 +174,10 @@ export default function WordsPage() {
     }
 
     return (
-      <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700 mt-4">
-        <h3 className="text-sm font-medium text-slate-900 dark:text-white">Grammatical Forms ({categoryName})</h3>
+      <div className="grid grid-cols-2 gap-4 pt-2">
         {fields.map(field => (
-          <div key={field.key}>
-            <label className="block text-xs text-slate-600 dark:text-slate-400">{field.label}</label>
+          <div key={field.key} className={fields.length === 1 ? 'col-span-2' : 'col-span-1'}>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">{field.label}</label>
             <input 
               type="text" 
               value={formData.forms[field.key] || ''} 
@@ -189,7 +185,7 @@ export default function WordsPage() {
                 ...formData, 
                 forms: { ...formData.forms, [field.key]: e.target.value }
               })} 
-              className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white" 
+              className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" 
             />
           </div>
         ))}
@@ -259,11 +255,19 @@ export default function WordsPage() {
 
               {word.forms && word.forms.length > 0 && (
                 <div className="mt-4 space-y-1">
-                  {word.forms.map(form => (
-                    <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
-                      <span className="font-medium text-slate-800 dark:text-slate-200 capitalize">{form.form_type.replace(/_/g, ' ')}:</span> {form.value}
-                    </div>
-                  ))}
+                  {word.forms.map(form => {
+                    let displayType = form.form_type;
+                    if (displayType === 'past_simple') displayType = 'Past';
+                    if (displayType === 'past_participle') displayType = 'Participle';
+                    if (displayType === 'present_participle') displayType = 'Ing';
+                    if (displayType === 'third_person_singular') displayType = '3rd Person';
+                    
+                    return (
+                      <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
+                        <span className="font-medium text-slate-800 dark:text-slate-200 capitalize">{displayType.replace(/_/g, ' ')}:</span> {form.value}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -302,18 +306,40 @@ export default function WordsPage() {
 
               {renderFormFields()}
 
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Videos</label>
+              <div className="pt-2">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">Videos</label>
+                
+                {formData.video_ids.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {formData.video_ids.map(id => {
+                      const video = videos.find(v => v.id === id);
+                      if (!video) return null;
+                      return (
+                        <span key={id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-sm text-slate-800 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-200">
+                          {video.title}
+                          <button 
+                            type="button" 
+                            onClick={() => setFormData({ ...formData, video_ids: formData.video_ids.filter(vid => vid !== id) })}
+                            className="ml-1 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 focus:outline-none"
+                          >
+                            &times;
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+
                 <input 
                   type="text" 
                   placeholder="Search videos..." 
                   value={videoSearchQuery}
                   onChange={(e) => setVideoSearchQuery(e.target.value)}
-                  className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                  className="w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white"
                 />
-                <div className="mt-2 max-h-40 overflow-y-auto rounded-md border border-slate-200 p-2 dark:border-slate-800">
+                <div className="mt-2 max-h-32 overflow-y-auto rounded-md border border-slate-200 p-2 dark:border-slate-800 space-y-1">
                   {videos.filter(v => v.title.toLowerCase().includes(videoSearchQuery.toLowerCase())).map(video => (
-                    <label key={video.id} className="flex items-center space-x-2 py-1 cursor-pointer">
+                    <label key={video.id} className="flex items-center space-x-3 py-1.5 px-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors">
                       <input 
                         type="checkbox" 
                         checked={formData.video_ids.includes(video.id)}
@@ -323,9 +349,9 @@ export default function WordsPage() {
                             : formData.video_ids.filter(id => id !== video.id);
                           setFormData({ ...formData, video_ids: newVideoIds });
                         }}
-                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900"
+                        className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4 dark:border-slate-700 dark:bg-slate-900"
                       />
-                      <span className="text-sm text-slate-700 dark:text-slate-300">{video.title}</span>
+                      <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{video.title}</span>
                     </label>
                   ))}
                   {videos.filter(v => v.title.toLowerCase().includes(videoSearchQuery.toLowerCase())).length === 0 && (
