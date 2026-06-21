@@ -107,8 +107,6 @@ export default function WordsPage() {
     }
   };
 
-  };
-
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between sm:flex-row sm:items-center">
