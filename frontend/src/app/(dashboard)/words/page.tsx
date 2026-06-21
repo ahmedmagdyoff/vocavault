@@ -5,13 +5,29 @@ import { Button } from '@/components/ui/Button';
 import { Plus, Search, Trash2, Edit } from 'lucide-react';
 import { wordsApi } from '@/lib/words';
 import { categoriesApi } from '@/lib/categories';
-import { Word, Category } from '@/types';
+import { videosApi } from '@/lib/videos';
+import { Word, Category, Video } from '@/types';
 import toast from 'react-hot-toast';
 
 export default function WordsPage() {
   const [words, setWords] = useState<Word[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modals state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Form state
+  const [formData, setFormData] = useState({
+    word: '',
+    meaning: '',
+    notes: '',
+    category_id: '',
+    video_ids: [] as number[],
+  });
 
   useEffect(() => {
     fetchData();
@@ -19,12 +35,14 @@ export default function WordsPage() {
 
   const fetchData = async () => {
     try {
-      const [wordsRes, catsRes] = await Promise.all([
+      const [wordsRes, catsRes, videosRes] = await Promise.all([
         wordsApi.getWords(),
-        categoriesApi.getCategories()
+        categoriesApi.getCategories(),
+        videosApi.getVideos()
       ]);
       setWords(wordsRes.data);
       setCategories(catsRes.data);
+      setVideos(videosRes.data);
     } catch (error) {
       toast.error('Failed to load vocabulary');
     } finally {
@@ -44,6 +62,55 @@ export default function WordsPage() {
     }
   };
 
+  const openAddModal = () => {
+    setEditingId(null);
+    setFormData({ word: '', meaning: '', notes: '', category_id: '', video_ids: [] });
+    setIsModalOpen(true);
+  };
+
+  const openEditModal = (word: Word) => {
+    setEditingId(word.id);
+    setFormData({
+      word: word.word,
+      meaning: word.meaning,
+      notes: word.notes || '',
+      category_id: word.category_id ? word.category_id.toString() : '',
+      video_ids: word.videos?.map(v => v.id) || [],
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const payload = {
+        ...formData,
+        category_id: formData.category_id ? parseInt(formData.category_id) : undefined,
+      };
+
+      if (editingId) {
+        const res = await wordsApi.updateWord(editingId, payload);
+        setWords(words.map(w => w.id === editingId ? res.data : w));
+        toast.success('Word updated successfully');
+      } else {
+        const res = await wordsApi.createWord(payload);
+        setWords([res.data, ...words]);
+        toast.success('Word added successfully');
+      }
+      setIsModalOpen(false);
+    } catch (error) {
+      toast.error(`Failed to ${editingId ? 'update' : 'add'} word`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleVideoSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = Array.from(e.target.selectedOptions, option => parseInt(option.value));
+    setFormData({ ...formData, video_ids: value });
+  };
+
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between sm:flex-row sm:items-center">
@@ -51,7 +118,7 @@ export default function WordsPage() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Words</h1>
           <p className="mt-1 text-slate-600 dark:text-slate-400">Your personal vocabulary library.</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button onClick={openAddModal} className="mt-4 sm:mt-0">
           <Plus className="mr-2 h-4 w-4" /> Add Word
         </Button>
       </div>
@@ -82,7 +149,7 @@ export default function WordsPage() {
           {words.map((word) => (
             <div key={word.id} className="group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
               <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100 flex gap-2">
-                <button className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                <button onClick={() => openEditModal(word)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                   <Edit className="h-4 w-4" />
                 </button>
                 <button onClick={() => handleDelete(word.id)} className="text-slate-400 hover:text-red-600 dark:hover:text-red-400">
@@ -109,6 +176,49 @@ export default function WordsPage() {
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900">
+            <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">{editingId ? 'Edit Word' : 'Add Word'}</h2>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Word</label>
+                <input required type="text" value={formData.word} onChange={e => setFormData({...formData, word: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Meaning</label>
+                <textarea required rows={2} value={formData.meaning} onChange={e => setFormData({...formData, meaning: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Notes (Optional)</label>
+                <textarea rows={2} value={formData.notes} onChange={e => setFormData({...formData, notes: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
+                <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                  <option value="">Select Category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Videos (Optional - Hold Ctrl/Cmd to multi-select)</label>
+                <select multiple value={formData.video_ids.map(String)} onChange={handleVideoSelect} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                  {videos.map(video => (
+                    <option key={video.id} value={video.id}>{video.title}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>{editingId ? 'Save Changes' : 'Add Word'}</Button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>

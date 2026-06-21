@@ -2,15 +2,44 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { BookOpen, Video, FolderTree } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { videosApi } from '@/lib/videos';
+import { wordsApi } from '@/lib/words';
+import { categoriesApi } from '@/lib/categories';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [statsData, setStatsData] = useState({ words: 0, videos: 0, categories: 0 });
+  const [loading, setLoading] = useState(true);
 
-  // In a real app, these would come from an API
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [wordsRes, videosRes, categoriesRes] = await Promise.all([
+          wordsApi.getWords(),
+          videosApi.getVideos(),
+          categoriesApi.getCategories()
+        ]);
+        
+        setStatsData({
+          words: wordsRes.data.length,
+          videos: videosRes.data.length,
+          categories: categoriesRes.data.length,
+        });
+      } catch (error) {
+        console.error('Failed to load stats', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStats();
+  }, []);
+
   const stats = [
-    { name: 'Total Words', value: '120', icon: BookOpen, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400' },
-    { name: 'Total Videos', value: '35', icon: Video, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400' },
-    { name: 'Categories', value: '8', icon: FolderTree, color: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400' },
+    { name: 'Total Words', value: loading ? '...' : statsData.words.toString(), icon: BookOpen, color: 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400' },
+    { name: 'Total Videos', value: loading ? '...' : statsData.videos.toString(), icon: Video, color: 'text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-400' },
+    { name: 'Categories', value: loading ? '...' : statsData.categories.toString(), icon: FolderTree, color: 'text-purple-600 bg-purple-100 dark:bg-purple-900/30 dark:text-purple-400' },
   ];
 
   return (

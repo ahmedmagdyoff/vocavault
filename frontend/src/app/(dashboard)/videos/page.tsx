@@ -11,6 +11,10 @@ export default function VideosPage() {
   const [videos, setVideos] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newVideo, setNewVideo] = useState({ title: '', url: '', platform: 'youtube' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     fetchVideos();
   }, []);
@@ -38,6 +42,22 @@ export default function VideosPage() {
     }
   };
 
+  const handleAddVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    try {
+      const response = await videosApi.createVideo(newVideo);
+      setVideos([response.data, ...videos]);
+      toast.success('Video added successfully');
+      setIsAddModalOpen(false);
+      setNewVideo({ title: '', url: '', platform: 'youtube' });
+    } catch (error) {
+      toast.error('Failed to add video');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between sm:flex-row sm:items-center">
@@ -45,7 +65,7 @@ export default function VideosPage() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Videos</h1>
           <p className="mt-1 text-slate-600 dark:text-slate-400">Manage your saved video sources.</p>
         </div>
-        <Button className="mt-4 sm:mt-0">
+        <Button onClick={() => setIsAddModalOpen(true)} className="mt-4 sm:mt-0">
           <Plus className="mr-2 h-4 w-4" /> Add Video
         </Button>
       </div>
@@ -111,6 +131,38 @@ export default function VideosPage() {
           </tbody>
         </table>
       </div>
+
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900">
+            <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">Add Video</h2>
+            <form onSubmit={handleAddVideo} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Title</label>
+                <input required type="text" value={newVideo.title} onChange={e => setNewVideo({...newVideo, title: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">URL</label>
+                <input required type="url" value={newVideo.url} onChange={e => setNewVideo({...newVideo, url: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Platform</label>
+                <select value={newVideo.platform} onChange={e => setNewVideo({...newVideo, platform: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                  <option value="youtube">YouTube</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div className="mt-6 flex justify-end gap-3">
+                <Button type="button" variant="ghost" onClick={() => setIsAddModalOpen(false)}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>Add Video</Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
