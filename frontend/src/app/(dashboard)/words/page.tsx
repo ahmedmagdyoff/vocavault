@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Plus, Search, Trash2, Edit } from 'lucide-react';
 import { wordsApi } from '@/lib/words';
@@ -20,6 +20,10 @@ export default function WordsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [videoSearchQuery, setVideoSearchQuery] = useState('');
+
+  // Filters state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -107,6 +111,15 @@ export default function WordsPage() {
     }
   };
 
+  const filteredWords = useMemo(() => {
+    return words.filter((word) => {
+      const matchesSearch = word.word.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                            word.meaning.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = selectedCategory ? word.category?.id?.toString() === selectedCategory : true;
+      return matchesSearch && matchesCategory;
+    });
+  }, [words, searchQuery, selectedCategory]);
+
   return (
     <div>
       <div className="mb-8 flex flex-col justify-between sm:flex-row sm:items-center">
@@ -125,10 +138,16 @@ export default function WordsPage() {
           <input
             type="text"
             placeholder="Search words..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full border-0 bg-transparent py-2 pl-3 focus:ring-0 sm:text-sm dark:text-white"
           />
         </div>
-        <select className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+        <select 
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="rounded-md border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+        >
           <option value="">All Categories</option>
           {categories.map(cat => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -140,9 +159,11 @@ export default function WordsPage() {
         <div className="text-center text-slate-500 py-12">Loading vocabulary...</div>
       ) : words.length === 0 ? (
         <div className="text-center text-slate-500 py-12">No words found. Start building your library!</div>
+      ) : filteredWords.length === 0 ? (
+        <div className="text-center text-slate-500 py-12">No words found matching your filters.</div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {words.map((word) => (
+          {filteredWords.map((word) => (
             <div key={word.id} className="group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
               <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100 flex gap-2">
                 <button onClick={() => openEditModal(word)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
