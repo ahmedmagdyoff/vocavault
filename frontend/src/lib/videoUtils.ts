@@ -46,12 +46,13 @@ export function parseVideoUrl(url: string): VideoProviderInfo {
   }
 
   // Instagram
-  const igMatch = url.match(/instagram\.com\/(?:p|reel)\/([a-zA-Z0-9_-]+)/i);
-  if (igMatch && igMatch[1]) {
+  const igMatch = url.match(/instagram\.com\/(p|reel)\/([a-zA-Z0-9_-]+)/i);
+  if (igMatch && igMatch[2]) {
+    const isReel = igMatch[1].toLowerCase() === "reel";
     return {
-      provider: "instagram",
-      videoId: igMatch[1],
-      embedUrl: `https://instagram.com/p/${igMatch[1]}/embed`,
+      provider: isReel ? "instagram-reel" : "instagram-post",
+      videoId: igMatch[2],
+      embedUrl: `https://instagram.com/p/${igMatch[2]}/embed`,
     };
   }
 
