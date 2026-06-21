@@ -20,6 +20,8 @@ export default function WordsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [videoSearchQuery, setVideoSearchQuery] = useState('');
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<Word | null>(null);
 
   // Filters state
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,6 +33,7 @@ export default function WordsPage() {
     meaning: '',
     category_id: '',
     video_ids: [] as number[],
+    forms: {} as Record<string, string>,
   });
 
   useEffect(() => {
@@ -54,7 +57,8 @@ export default function WordsPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (confirm('Are you sure you want to delete this word?')) {
       try {
         await wordsApi.deleteWord(id);
@@ -68,30 +72,48 @@ export default function WordsPage() {
 
   const openAddModal = () => {
     setEditingId(null);
-    setFormData({ word: '', meaning: '', category_id: '', video_ids: [] });
+    setFormData({ word: '', meaning: '', category_id: '', video_ids: [], forms: {} });
     setVideoSearchQuery('');
     setIsModalOpen(true);
   };
 
-  const openEditModal = (word: Word) => {
+  const openEditModal = (word: Word, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     setEditingId(word.id);
+    
+    const formRecord: Record<string, string> = {};
+    if (word.forms) {
+      word.forms.forEach(f => formRecord[f.form_type] = f.value);
+    }
+
     setFormData({
       word: word.word,
       meaning: word.meaning,
       category_id: word.category_id ? word.category_id.toString() : '',
       video_ids: word.videos?.map(v => v.id) || [],
+      forms: formRecord,
     });
     setVideoSearchQuery('');
     setIsModalOpen(true);
+  };
+
+  const openDetailsModal = (word: Word) => {
+    setSelectedWord(word);
+    setIsDetailsModalOpen(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     try {
+      const formsPayload = Object.entries(formData.forms)
+        .filter(([_, value]) => value.trim() !== '')
+        .map(([form_type, value]) => ({ form_type, value }));
+
       const payload = {
         ...formData,
         category_id: formData.category_id ? parseInt(formData.category_id) : undefined,
+        forms: formsPayload.length > 0 ? formsPayload : undefined,
       };
 
       if (editingId) {
@@ -119,6 +141,61 @@ export default function WordsPage() {
       return matchesSearch && matchesCategory;
     });
   }, [words, searchQuery, selectedCategory]);
+
+  const getSelectedCategoryName = () => {
+    if (!formData.category_id) return null;
+    const cat = categories.find(c => c.id.toString() === formData.category_id);
+    return cat ? cat.name : null;
+  };
+
+  const renderFormFields = () => {
+    const categoryName = getSelectedCategoryName();
+    if (!categoryName) return null;
+
+    let fields: { key: string; label: string }[] = [];
+    if (categoryName === 'Verb') {
+      fields = [
+        { key: 'base_form', label: 'Base Form' },
+        { key: 'past_simple', label: 'Past Simple' },
+        { key: 'past_participle', label: 'Past Participle' },
+        { key: 'present_participle', label: 'Present Participle' },
+        { key: 'third_person_singular', label: 'Third Person Singular' },
+      ];
+    } else if (categoryName === 'Noun') {
+      fields = [
+        { key: 'singular', label: 'Singular' },
+        { key: 'plural', label: 'Plural' },
+      ];
+    } else if (categoryName === 'Adjective') {
+      fields = [
+        { key: 'positive', label: 'Positive' },
+        { key: 'comparative', label: 'Comparative' },
+        { key: 'superlative', label: 'Superlative' },
+      ];
+    } else {
+      return null;
+    }
+
+    return (
+      <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700 mt-4">
+        <h3 className="text-sm font-medium text-slate-900 dark:text-white">Grammatical Forms ({categoryName})</h3>
+        {fields.map(field => (
+          <div key={field.key}>
+            <label className="block text-xs text-slate-600 dark:text-slate-400">{field.label}</label>
+            <input 
+              type="text" 
+              value={formData.forms[field.key] || ''} 
+              onChange={e => setFormData({
+                ...formData, 
+                forms: { ...formData.forms, [field.key]: e.target.value }
+              })} 
+              className="mt-1 w-full rounded-md border border-slate-300 p-2 text-sm dark:border-slate-700 dark:bg-slate-800 dark:text-white" 
+            />
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div>
@@ -164,12 +241,12 @@ export default function WordsPage() {
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {filteredWords.map((word) => (
-            <div key={word.id} className="group relative rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
+            <div key={word.id} onClick={() => openDetailsModal(word)} className="group relative cursor-pointer rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-all hover:shadow-md dark:border-slate-800 dark:bg-slate-900">
               <div className="absolute right-4 top-4 opacity-0 transition-opacity group-hover:opacity-100 flex gap-2">
-                <button onClick={() => openEditModal(word)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
+                <button onClick={(e) => openEditModal(word, e)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                   <Edit className="h-4 w-4" />
                 </button>
-                <button onClick={() => handleDelete(word.id)} className="text-slate-400 hover:text-red-600 dark:hover:text-red-400">
+                <button onClick={(e) => handleDelete(word.id, e)} className="text-slate-400 hover:text-red-600 dark:hover:text-red-400">
                   <Trash2 className="h-4 w-4" />
                 </button>
               </div>
@@ -179,6 +256,16 @@ export default function WordsPage() {
               </span>
               <h3 className="mb-1 text-2xl font-bold text-slate-900 dark:text-white">{word.word}</h3>
               <p className="mb-4 text-lg text-slate-600 dark:text-slate-400">{word.meaning}</p>
+
+              {word.forms && word.forms.length > 0 && (
+                <div className="mt-4 space-y-1">
+                  {word.forms.map(form => (
+                    <div key={form.id} className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="font-medium text-slate-800 dark:text-slate-200 capitalize">{form.form_type.replace(/_/g, ' ')}:</span> {form.value}
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {word.videos && word.videos.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
@@ -192,7 +279,7 @@ export default function WordsPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900 max-h-[90vh] overflow-y-auto">
             <h2 className="mb-4 text-xl font-bold text-slate-900 dark:text-white">{editingId ? 'Edit Word' : 'Add Word'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -205,13 +292,16 @@ export default function WordsPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
-                <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                <select required value={formData.category_id} onChange={e => setFormData({...formData, category_id: e.target.value, forms: {}})} className="mt-1 w-full rounded-md border border-slate-300 p-2 dark:border-slate-700 dark:bg-slate-800 dark:text-white">
                   <option value="">Select Category</option>
                   {categories.map(cat => (
                     <option key={cat.id} value={cat.id}>{cat.name}</option>
                   ))}
                 </select>
               </div>
+
+              {renderFormFields()}
+
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Videos</label>
                 <input 
@@ -248,6 +338,51 @@ export default function WordsPage() {
                 <Button type="submit" disabled={isSubmitting} isLoading={isSubmitting}>{editingId ? 'Save Changes' : 'Add Word'}</Button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {isDetailsModalOpen && selectedWord && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setIsDetailsModalOpen(false)}>
+          <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-lg dark:bg-slate-900 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <span className="mb-2 inline-block rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
+                  {selectedWord.category?.name || 'Unknown'}
+                </span>
+                <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{selectedWord.word}</h2>
+                <p className="text-xl text-slate-600 dark:text-slate-400 mt-1">{selectedWord.meaning}</p>
+              </div>
+              <button onClick={() => setIsDetailsModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-2xl leading-none">&times;</button>
+            </div>
+
+            {selectedWord.forms && selectedWord.forms.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">Grammatical Forms</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedWord.forms.map(form => (
+                    <div key={form.id} className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                      <div className="text-xs text-slate-500 dark:text-slate-400 capitalize mb-1">{form.form_type.replace(/_/g, ' ')}</div>
+                      <div className="font-medium text-slate-900 dark:text-white">{form.value}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {selectedWord.videos && selectedWord.videos.length > 0 && (
+              <div className="mt-6">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">Related Videos</h3>
+                <div className="space-y-3">
+                  {selectedWord.videos.map(video => (
+                    <a key={video.id} href={video.url} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                      <div className="font-medium text-slate-900 dark:text-white">{video.title}</div>
+                      <div className="text-sm text-blue-600 dark:text-blue-400 truncate">{video.url}</div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

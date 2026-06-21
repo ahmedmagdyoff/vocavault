@@ -21,6 +21,12 @@ export interface Category {
   name: string;
 }
 
+export interface WordForm {
+  id: number;
+  form_type: string;
+  value: string;
+}
+
 export interface Word {
   id: number;
   user_id: number;
@@ -31,6 +37,7 @@ export interface Word {
   updated_at: string;
   category?: Category;
   videos?: Video[];
+  forms?: WordForm[];
 }
 
 export interface AuthResponse {
