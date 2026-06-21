@@ -52,6 +52,14 @@ The frontend is now fully connected to the backend APIs, removing all mock data.
 - Concurrently fetches `getWords()`, `getVideos()`, and `getCategories()`.
 - Built-in loading states display while waiting for the API response.
 
+### Learning Dashboard (`/dashboard`)
+- Overhauled the root dashboard to act as a data-driven Learning Hub instead of a static admin overview.
+- **Hero Welcome Section**: Displays dynamic total words and daily learning streak statistics read directly from `localStorage`.
+- **Library Health**: Calculates and graphs the percentage of words utilizing grammatical forms, linked videos, and assigned categories.
+- **Category Distribution**: Renders comparative progress bars displaying exactly how many words exist in each category.
+- **Word of the Day**: Features a heavily styled card presenting a deterministically selected word every 24 hours, including its meaning, grammatical forms, and video counts.
+- **Recent Additions**: Displays the 5 newest vocabulary words and 5 newest videos added to the library.
+
 ### Videos Management (`/dashboard/videos`)
 - Wired the table to the `videosApi.getVideos()` endpoint.
 - Created **"Add/Edit Video"** modal:
