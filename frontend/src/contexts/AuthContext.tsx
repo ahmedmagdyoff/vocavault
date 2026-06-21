@@ -22,13 +22,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check if user is logged in via cookie on mount
     const checkUser = async () => {
       try {
         const userData = await authApi.getUser();
         setUser(userData);
       } catch (error) {
-        // 401 error means not logged in, which is fine initially
         setUser(null);
       } finally {
         setLoading(false);
@@ -36,8 +34,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     checkUser();
+  }, []);
 
-    // Listen for auth errors from api.ts (e.g. session expired)
+  useEffect(() => {
     const handleAuthError = () => {
       setUser(null);
       if (pathname !== '/login' && pathname !== '/register') {
