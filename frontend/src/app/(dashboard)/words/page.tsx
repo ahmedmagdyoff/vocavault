@@ -8,6 +8,7 @@ import { categoriesApi } from '@/lib/categories';
 import { videosApi } from '@/lib/videos';
 import { Word, Category, Video } from '@/types';
 import toast from 'react-hot-toast';
+import VideoModal from '@/components/VideoModal';
 
 export default function WordsPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -22,6 +23,7 @@ export default function WordsPage() {
   const [videoSearchQuery, setVideoSearchQuery] = useState('');
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [selectedWord, setSelectedWord] = useState<Word | null>(null);
+  const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
 
   // Filters state
   const [searchQuery, setSearchQuery] = useState('');
@@ -384,9 +386,13 @@ export default function WordsPage() {
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 pb-2 mb-3">Found In</h3>
                 <div className="space-y-3">
                   {selectedWord.videos.map(video => (
-                    <a key={video.id} href={video.url} target="_blank" rel="noopener noreferrer" className="block p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
-                      <div className="font-medium text-slate-900 dark:text-white">{video.title}</div>
-                    </a>
+                    <button 
+                      key={video.id} 
+                      onClick={() => setPlayingVideo({ url: video.url, title: video.title })}
+                      className="block w-full text-left p-3 rounded-lg border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                    >
+                      <div className="font-medium text-slate-900 dark:text-white">🎥 {video.title}</div>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -394,6 +400,13 @@ export default function WordsPage() {
           </div>
         </div>
       )}
+
+      <VideoModal 
+        isOpen={!!playingVideo} 
+        onClose={() => setPlayingVideo(null)} 
+        videoUrl={playingVideo?.url || null}
+        title={playingVideo?.title}
+      />
     </div>
   );
 }
