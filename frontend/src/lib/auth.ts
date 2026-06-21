@@ -1,8 +1,17 @@
-import { fetchApi } from './api';
+import { fetchApi, apiConfig } from './api';
 import { AuthResponse, User } from '@/types';
+import axios from 'axios';
+
+// Initialize CSRF cookie
+export const initCsrf = async () => {
+  return axios.get(`${apiConfig.baseURL}/sanctum/csrf-cookie`, {
+    withCredentials: true,
+  });
+};
 
 export const auth = {
   async register(data: any): Promise<AuthResponse> {
+    await initCsrf();
     return fetchApi<AuthResponse>('/api/register', {
       method: 'POST',
       body: JSON.stringify(data),
@@ -10,6 +19,7 @@ export const auth = {
   },
 
   async login(data: any): Promise<AuthResponse> {
+    await initCsrf();
     return fetchApi<AuthResponse>('/api/login', {
       method: 'POST',
       body: JSON.stringify(data),

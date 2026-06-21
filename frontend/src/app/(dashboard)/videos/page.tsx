@@ -1,14 +1,42 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Plus, Video as VideoIcon, Youtube, Search, Trash2, Edit } from 'lucide-react';
+import { Plus, Video as VideoIcon, Search, Trash2, Edit } from 'lucide-react';
+import { videosApi } from '@/lib/videos';
+import { Video } from '@/types';
+import toast from 'react-hot-toast';
 
 export default function VideosPage() {
-  // Mock data for UI until backend is ready
-  const mockVideos = [
-    { id: 1, title: 'Friends Episode 1', platform: 'youtube', url: 'https://youtube.com/...', created_at: '2026-06-21' },
-    { id: 2, title: 'Learn English Fast', platform: 'tiktok', url: 'https://tiktok.com/...', created_at: '2026-06-20' },
-  ];
+  const [videos, setVideos] = useState<Video[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchVideos();
+  }, []);
+
+  const fetchVideos = async () => {
+    try {
+      const response = await videosApi.getVideos();
+      setVideos(response.data);
+    } catch (error) {
+      toast.error('Failed to load videos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (confirm('Are you sure you want to delete this video?')) {
+      try {
+        await videosApi.deleteVideo(id);
+        toast.success('Video deleted successfully');
+        setVideos(videos.filter(v => v.id !== id));
+      } catch (error) {
+        toast.error('Failed to delete video');
+      }
+    }
+  };
 
   return (
     <div>
@@ -42,32 +70,44 @@ export default function VideosPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
-            {mockVideos.map((video) => (
-              <tr key={video.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <td className="whitespace-nowrap px-6 py-4">
-                  <div className="flex items-center">
-                    <VideoIcon className="mr-3 h-5 w-5 text-slate-400" />
-                    <span className="font-medium text-slate-900 dark:text-white">{video.title}</span>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-                    {video.platform}
-                  </span>
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                  {video.created_at}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
-                  <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4">
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </td>
+            {loading ? (
+              <tr>
+                <td colSpan={4} className="px-6 py-4 text-center text-sm text-slate-500">Loading...</td>
               </tr>
-            ))}
+            ) : videos.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-6 py-4 text-center text-sm text-slate-500">No videos found. Add one to get started!</td>
+              </tr>
+            ) : (
+              videos.map((video) => (
+                <tr key={video.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <div className="flex items-center">
+                      <VideoIcon className="mr-3 h-5 w-5 text-slate-400" />
+                      <a href={video.url} target="_blank" rel="noopener noreferrer" className="font-medium text-slate-900 hover:text-blue-600 dark:text-white dark:hover:text-blue-400">
+                        {video.title}
+                      </a>
+                    </div>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4">
+                    <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-200 capitalize">
+                      {video.platform}
+                    </span>
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                    {new Date(video.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                    <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 mr-4">
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button onClick={() => handleDelete(video.id)} className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

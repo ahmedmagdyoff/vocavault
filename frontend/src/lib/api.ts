@@ -1,43 +1,55 @@
+import axios from 'axios';
+
 export const apiConfig = {
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
 };
 
-export async function fetchApi<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
-
-  const headers: HeadersInit = {
+// Create an Axios instance
+const apiClient = axios.create({
+  baseURL: apiConfig.baseURL,
+  headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
-    ...(options.headers || {}),
-  };
+  },
+  withCredentials: true, // Crucial for Sanctum SPA Auth
+});
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  const response = await fetch(`${apiConfig.baseURL}${endpoint}`, {
-    ...options,
-    headers,
-  });
-
-  if (!response.ok) {
-    if (response.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('token');
+// Interceptor to handle 401 Unauthorized
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401 && typeof window !== 'undefined') {
       window.dispatchEvent(new Event('auth-error'));
     }
-
-    const errorData = await response.json().catch(() => ({}));
-    throw {
-      status: response.status,
-      message: errorData.message || 'An error occurred',
-      errors: errorData.errors,
-    };
+    return Promise.reject(error);
   }
+);
 
-  // Handle empty responses (like 204 No Content)
-  const text = await response.text();
-  return text ? JSON.parse(text) : ({} as T);
+// Wrapper to mimic the previous fetchApi signature and return only data
+export async function fetchApi<T>(endpoint: string, options: any = {}): Promise<T> {
+  const method = options.method || 'GET';
+  const data = options.body ? JSON.parse(options.body) : undefined;
+  const params = options.params;
+
+  try {
+    const response = await apiClient.request<T>({
+      url: endpoint,
+      method,
+      data,
+      params,
+      headers: options.headers,
+    });
+    return response.data;
+  } catch (error: any) {
+    if (axios.isAxiosError(error) && error.response) {
+      throw {
+        status: error.response.status,
+        message: error.response.data.message || 'An error occurred',
+        errors: error.response.data.errors,
+      };
+    }
+    throw error;
+  }
 }
+
+export default apiClient;

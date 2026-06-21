@@ -22,24 +22,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check if token exists on mount
+    // Check if user is logged in via cookie on mount
     const checkUser = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const userData = await authApi.getUser();
-          setUser(userData);
-        } catch (error) {
-          console.error('Failed to fetch user:', error);
-          localStorage.removeItem('token');
-        }
+      try {
+        const userData = await authApi.getUser();
+        setUser(userData);
+      } catch (error) {
+        // 401 error means not logged in, which is fine initially
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     checkUser();
 
-    // Listen for auth errors from api.ts
+    // Listen for auth errors from api.ts (e.g. session expired)
     const handleAuthError = () => {
       setUser(null);
       if (pathname !== '/login' && pathname !== '/register') {
@@ -53,14 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (data: any) => {
     const response = await authApi.login(data);
-    localStorage.setItem('token', response.token);
     setUser(response.user);
     return response;
   };
 
   const register = async (data: any) => {
     const response = await authApi.register(data);
-    localStorage.setItem('token', response.token);
     setUser(response.user);
     return response;
   };
@@ -71,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Logout error', error);
     } finally {
-      localStorage.removeItem('token');
       setUser(null);
       router.push('/login');
     }
