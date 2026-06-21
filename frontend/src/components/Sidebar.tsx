@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import { BookOpen, Video, LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
+import { BookOpen, Video, LayoutDashboard, LogOut, Menu, X, GraduationCap } from 'lucide-react';
 import { useState } from 'react';
 
 export default function Sidebar() {
@@ -13,6 +13,7 @@ export default function Sidebar() {
 
   const navItems = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+    { name: 'Learn', href: '/learn', icon: GraduationCap },
     { name: 'Videos', href: '/videos', icon: Video },
     { name: 'Words', href: '/words', icon: BookOpen },
   ];

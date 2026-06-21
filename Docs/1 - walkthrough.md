@@ -69,8 +69,14 @@ The frontend is now fully connected to the backend APIs, removing all mock data.
   - **Dynamic Grammatical Forms:** When a category is selected (Verb, Noun, Adjective), dedicated form inputs automatically appear allowing you to save all grammatical variations of the word (e.g. Past Simple, Plural, Superlative).
   - **Custom Video Selector:** Replaced the native `select multiple` element with a polished, searchable checkbox/tag list that allows fast filtering and tagging of videos.
   - Optimistically updates the list state after `createWord()` or `updateWord()`.
-- **Word Cards**: Now beautifully display all associated grammatical forms.
 - **Word Details Modal**: Clicking on a Word Card now opens an immersive modal that displays the word's complete breakdown, including all its grammatical forms and related videos.
+
+### Learning Mode
+- Created a dedicated **Learning Mode** (`/learn`) structured like an interactive flashcard system.
+- Supports **Random**, **Next**, and **Previous** navigation.
+- **Reveal Mechanics**: By default, words hide their meaning, grammatical forms, and related videos to facilitate memory recall. Users can optionally reveal these items via buttons.
+- Features persistent **Progress Tracking** via `localStorage`, displaying daily reviewed counts and absolute lifetime totals.
+- Supports robust learning pool **Filters** (by Category, by Video).
 The frontend project structure, pages, and core components have been generated based on the implementation plan.
 
 ### Project Setup & Design System
