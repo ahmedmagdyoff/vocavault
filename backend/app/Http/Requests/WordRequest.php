@@ -27,6 +27,9 @@ class WordRequest extends FormRequest
             'category_id' => ['required', 'exists:categories,id'],
             'video_ids' => ['nullable', 'array'],
             'video_ids.*' => ['exists:videos,id'],
+            'forms' => ['nullable', 'array'],
+            'forms.*.form_type' => ['required', 'string'],
+            'forms.*.value' => ['required', 'string'],
         ];
     }
 }

@@ -16,7 +16,7 @@ class WordController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $words = $request->user()->words()->with(['category', 'videos'])->latest()->get();
+        $words = $request->user()->words()->with(['category', 'videos', 'forms'])->latest()->get();
         return WordResource::collection($words);
     }
 
@@ -25,7 +25,7 @@ class WordController extends Controller
      */
     public function store(WordRequest $request): WordResource
     {
-        $word = $request->user()->words()->create($request->safe()->except('video_ids'));
+        $word = $request->user()->words()->create($request->safe()->except(['video_ids', 'forms']));
 
         if ($request->has('video_ids')) {
             // Ensure videos belong to the user
@@ -33,7 +33,11 @@ class WordController extends Controller
             $word->videos()->sync($validVideoIds);
         }
 
-        return new WordResource($word->load(['category', 'videos']));
+        if ($request->has('forms')) {
+            $word->forms()->createMany($request->forms);
+        }
+
+        return new WordResource($word->load(['category', 'videos', 'forms']));
     }
 
     /**
@@ -45,14 +49,19 @@ class WordController extends Controller
             abort(403);
         }
 
-        $word->update($request->safe()->except('video_ids'));
+        $word->update($request->safe()->except(['video_ids', 'forms']));
 
         if ($request->has('video_ids')) {
             $validVideoIds = $request->user()->videos()->whereIn('id', $request->video_ids)->pluck('id');
             $word->videos()->sync($validVideoIds);
         }
 
-        return new WordResource($word->load(['category', 'videos']));
+        if ($request->has('forms')) {
+            $word->forms()->delete();
+            $word->forms()->createMany($request->forms);
+        }
+
+        return new WordResource($word->load(['category', 'videos', 'forms']));
     }
 
     /**

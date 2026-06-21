@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[Fillable(['word', 'meaning', 'notes', 'category_id'])]
+#[Fillable(['word', 'meaning', 'category_id'])]
 class Word extends Model
 {
     /**
@@ -32,5 +32,13 @@ class Word extends Model
     public function videos(): BelongsToMany
     {
         return $this->belongsToMany(Video::class, 'video_words');
+    }
+
+    /**
+     * Get the grammatical forms associated with the word.
+     */
+    public function forms(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(WordForm::class);
     }
 }

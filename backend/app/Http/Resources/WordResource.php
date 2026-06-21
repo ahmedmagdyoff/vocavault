@@ -24,6 +24,7 @@ class WordResource extends JsonResource
             'updated_at' => $this->updated_at,
             'category' => new CategoryResource($this->whenLoaded('category')),
             'videos' => VideoResource::collection($this->whenLoaded('videos')),
+            'forms' => WordFormResource::collection($this->whenLoaded('forms')),
         ];
     }
 }
