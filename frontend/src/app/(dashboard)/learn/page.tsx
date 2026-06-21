@@ -8,6 +8,7 @@ import { categoriesApi } from '@/lib/categories';
 import { videosApi } from '@/lib/videos';
 import { Word, Category, Video } from '@/types';
 import toast from 'react-hot-toast';
+import VideoModal from '@/components/VideoModal';
 
 export default function LearnPage() {
   const [words, setWords] = useState<Word[]>([]);
@@ -24,9 +25,10 @@ export default function LearnPage() {
   const [isMeaningRevealed, setIsMeaningRevealed] = useState(false);
   const [isFormsRevealed, setIsFormsRevealed] = useState(false);
 
-  // Progress State
   const [dailyReviewed, setDailyReviewed] = useState(0);
   const [totalReviewed, setTotalReviewed] = useState(0);
+
+  const [playingVideo, setPlayingVideo] = useState<{ url: string; title: string } | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -264,15 +266,13 @@ export default function LearnPage() {
                     <h4 className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-3 text-center uppercase tracking-widest">Found In Context</h4>
                     <div className="flex flex-wrap gap-2 justify-center">
                       {currentWord.videos.map(v => (
-                        <a 
+                        <button 
                           key={v.id} 
-                          href={v.url} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
+                          onClick={() => setPlayingVideo({ url: v.url, title: v.title })}
                           className="inline-flex items-center gap-1.5 rounded-full bg-white border border-slate-200 px-3.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700"
                         >
                           🎥 {v.title}
-                        </a>
+                        </button>
                       ))}
                     </div>
                   </div>
@@ -314,6 +314,13 @@ export default function LearnPage() {
           </>
         )}
       </div>
+
+      <VideoModal 
+        isOpen={!!playingVideo} 
+        onClose={() => setPlayingVideo(null)} 
+        videoUrl={playingVideo?.url || null}
+        title={playingVideo?.title}
+      />
     </div>
   );
 }
