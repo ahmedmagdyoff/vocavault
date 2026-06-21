@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { toast } from 'react-hot-toast';
-import LoadingScreen from '@/components/LoadingScreen';
+
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -53,7 +53,11 @@ export default function RegisterPage() {
 
   // Don't render the form if user is already authenticated or still checking
   if (authLoading || user) {
-    return <LoadingScreen />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900">
+        <div className="text-slate-500 dark:text-slate-400">Loading...</div>
+      </div>
+    );
   }
 
   return (

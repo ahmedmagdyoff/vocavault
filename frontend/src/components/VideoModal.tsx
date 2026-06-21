@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, ExternalLink, Video } from 'lucide-react';
 import { parseVideoUrl } from '@/lib/videoUtils';
 
 interface VideoModalProps {
@@ -34,6 +34,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
   if (!isOpen || !videoUrl) return null;
 
   const { provider, embedUrl } = parseVideoUrl(videoUrl);
+  const platformName = provider.charAt(0).toUpperCase() + provider.slice(1);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -57,7 +58,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
           </button>
         </div>
         
-        <div className="relative w-full flex-1 bg-black min-h-[300px] sm:min-h-[500px]">
+        <div className="relative w-full flex-1 bg-black min-h-[300px] sm:min-h-[500px] flex flex-col">
           {embedUrl ? (
             <iframe
               src={embedUrl}
@@ -66,16 +67,25 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
               allowFullScreen
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center text-slate-400 p-8 text-center">
-              <p className="mb-4">This video provider cannot be embedded directly.</p>
-              <a 
-                href={videoUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand-hover transition-colors"
-              >
-                Open in new tab
-              </a>
+            <div className="flex h-full w-full flex-1 flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900/50">
+              <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 max-w-md w-full flex flex-col items-center text-center">
+                <div className="h-16 w-16 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6">
+                  <Video className="h-8 w-8" />
+                </div>
+                <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Watch on {platformName}</h4>
+                <p className="text-slate-500 dark:text-slate-400 mb-8">
+                  Due to platform restrictions, {platformName} videos cannot be embedded directly in the dashboard.
+                </p>
+                <a 
+                  href={videoUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-full rounded-xl bg-brand px-6 py-4 text-base font-bold text-white hover:bg-brand-hover transition-all hover:scale-[1.02] shadow-lg shadow-brand/20"
+                >
+                  <ExternalLink className="mr-2 h-5 w-5" />
+                  Open Video
+                </a>
+              </div>
             </div>
           )}
         </div>
