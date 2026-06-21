@@ -1,5 +1,11 @@
 export interface VideoProviderInfo {
-  provider: "youtube" | "tiktok" | "facebook" | "instagram-reel" | "instagram-post" | "other";
+  provider:
+    | "youtube"
+    | "tiktok"
+    | "facebook"
+    | "instagram-reel"
+    | "instagram-post"
+    | "other";
   videoId: string | null;
   embedUrl: string | null;
 }

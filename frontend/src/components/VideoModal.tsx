@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { X, ExternalLink, Video, Youtube, Facebook, Instagram } from 'lucide-react';
+import { X, ExternalLink, Video, Play, Globe } from 'lucide-react';
 import { parseVideoUrl } from '@/lib/videoUtils';
 
 interface VideoModalProps {
@@ -34,13 +34,32 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
   if (!isOpen || !videoUrl) return null;
 
   const { provider, embedUrl } = parseVideoUrl(videoUrl);
-  const platformName = provider.charAt(0).toUpperCase() + provider.slice(1);
+  const isInstagram = provider.startsWith('instagram');
+  const platformName = isInstagram ? 'Instagram' : provider.charAt(0).toUpperCase() + provider.slice(1);
 
   const ProviderIcon = 
-    provider === 'youtube' ? Youtube :
-    provider === 'facebook' ? Facebook :
-    provider === 'instagram' ? Instagram :
+    provider === 'youtube' ? Video :
+    provider === 'facebook' ? Globe :
+    isInstagram ? Video :
+    provider === 'tiktok' ? Play :
     Video;
+
+  let modalWidthClass = 'max-w-4xl';
+  let videoContainerClass = 'aspect-video';
+  
+  if (provider === 'youtube') {
+    modalWidthClass = 'max-w-5xl';
+    videoContainerClass = 'aspect-video';
+  } else if (provider === 'tiktok' || provider === 'instagram-reel') {
+    modalWidthClass = 'max-w-md';
+    videoContainerClass = 'aspect-[9/16]';
+  } else if (provider === 'instagram-post') {
+    modalWidthClass = 'max-w-lg';
+    videoContainerClass = 'aspect-square sm:aspect-[4/5]';
+  } else if (provider === 'facebook') {
+    modalWidthClass = 'max-w-4xl';
+    videoContainerClass = 'aspect-video';
+  }
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
@@ -51,8 +70,8 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
       />
       
       {/* Modal content */}
-      <div className="relative w-full max-w-4xl rounded-2xl bg-white shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50 overflow-hidden flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800">
+      <div className={`relative w-full ${modalWidthClass} rounded-2xl bg-white shadow-xl dark:bg-slate-900 dark:shadow-2xl dark:shadow-black/50 overflow-hidden flex flex-col max-h-[90vh] transition-all duration-300`}>
+        <div className="flex items-center justify-between border-b border-slate-200 p-4 dark:border-slate-800 shrink-0">
           <div className="flex items-center gap-3 pr-4">
             <h3 className="font-semibold text-slate-900 dark:text-white truncate max-w-[150px] sm:max-w-md">
               {title || 'Video Player'}
@@ -72,7 +91,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
           </button>
         </div>
         
-        <div className="relative w-full flex-1 bg-black min-h-[300px] sm:min-h-[500px] flex flex-col">
+        <div className={`relative w-full bg-black flex flex-col ${videoContainerClass} overflow-hidden`}>
           {embedUrl ? (
             <iframe
               src={embedUrl}
@@ -81,7 +100,7 @@ export default function VideoModal({ isOpen, onClose, videoUrl, title }: VideoMo
               allowFullScreen
             />
           ) : (
-            <div className="flex h-full w-full flex-1 flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900/50">
+            <div className="flex h-full w-full flex-1 flex-col items-center justify-center p-8 bg-slate-50 dark:bg-slate-900/50 absolute inset-0">
               <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 max-w-md w-full flex flex-col items-center text-center">
                 <div className="h-16 w-16 bg-brand/10 text-brand rounded-2xl flex items-center justify-center mb-6">
                   <ProviderIcon className="h-8 w-8" />
