@@ -1,0 +1,6 @@
+[submodule "vocavault-api"]
+	path = vocavault-api
+	url = https://github.com/ahmedmagdyoff/vocavault-api
+[submodule "vocavault-web"]
+	path = vocavault-web
+	url = https://github.com/ahmedmagdyoff/vocavault-web
