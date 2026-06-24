@@ -2,7 +2,7 @@
 
 Vocabulary Learning Platform
 
-## Live Demo
+## Live
 
 https://vocavault.ahmedmagdy.cloud
 
