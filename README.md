@@ -1,29 +1,82 @@
+<div align="center">
+
 # 📚 VocaVault
 
-> Learn English vocabulary through real videos with structured word forms and interactive lessons.
+### Learn English vocabulary through real videos.
 
-VocaVault is an open-source vocabulary learning platform designed to help learners build their English vocabulary in a practical way using videos, categorized words, and different word forms.
+An open-source English vocabulary learning platform built with **Next.js**, **Laravel**, and **MySQL**.
+
+[🌐 Live Demo](https://vocavault.ahmedmagdy.cloud) •
+[⚙️ API](https://api.vocavault.ahmedmagdy.cloud)
+
+</div>
 
 ---
 
-## ✨ Features
+## 📖 About
 
-- 🔐 User Authentication
+VocaVault is an open-source platform that helps learners build their English vocabulary using real-world videos, categorized words, and structured word forms.
+
+The project is split into independent repositories:
+
+- 🖥 **Frontend** (Next.js)
+- ⚙️ **Backend API** (Laravel)
+- 📚 **Documentation**
+
+---
+
+# 📦 Repository Structure
+
+```
+VocaVault
+│
+├── docs/
+│
+├── vocavault-web/
+│   └── Next.js Frontend
+│
+└── vocavault-api/
+    └── Laravel REST API
+```
+
+---
+
+# 🏗 Architecture
+
+```
+             Browser
+                 │
+                 ▼
+         Next.js Frontend
+                 │
+             REST API
+                 ▼
+          Laravel Backend
+                 │
+                 ▼
+               MySQL
+```
+
+---
+
+# ✨ Features
+
+- 🔐 Authentication
 - 📚 Vocabulary Management
-- 🎥 Learn from Videos
-- 📝 Word Forms (Verb, Noun, Adjective...)
-- 🗂 Word Categories
-- 🔍 Fast Search
+- 🎥 Video Lessons
+- 📝 Word Forms
+- 🗂 Categories
+- 🔍 Search
 - 🌙 Dark Mode
 - 📱 Responsive Design
 - ⚡ REST API
-- 🚀 Automatic Deployment with GitHub Actions
+- 🚀 Automatic Deployment
 
 ---
 
-## 🛠 Tech Stack
+# 🛠 Tech Stack
 
-### Frontend
+## Frontend
 
 - Next.js 16
 - React 19
@@ -31,17 +84,16 @@ VocaVault is an open-source vocabulary learning platform designed to help learne
 - Tailwind CSS
 - Axios
 
-### Backend
+## Backend
 
 - Laravel 12
 - PHP 8
-- REST API
 
-### Database
+## Database
 
 - MySQL
 
-### Deployment
+## Deployment
 
 - GitHub Actions
 - PM2
@@ -51,145 +103,64 @@ VocaVault is an open-source vocabulary learning platform designed to help learne
 
 ---
 
-## 🏗 Architecture
+# 🚀 Getting Started
 
-```
-
-Next.js Frontend
-│
-│ REST API
-▼
-Laravel Backend
-│
-▼
-MySQL Database
-
-```
-
----
-
-## 🚀 Live Demo
-
-Frontend
-
-https://vocavault.ahmedmagdy.cloud
-
-API
-
-https://api.vocavault.ahmedmagdy.cloud
-
----
-
-## 📂 Project Structure
-
-### Frontend
-
-```
-
-app/
-components/
-contexts/
-hooks/
-lib/
-public/
-
-```
-
-### Backend
-
-```
-
-app/
-routes/
-database/
-app/Models/
-app/Http/
-resources/
-
-```
-
----
-
-## ⚙️ Getting Started
-
-### Clone the repositories
+Clone the repository.
 
 ```bash
-git clone https://github.com/ahmedmagdyoff/vocavault-web.git
-
-git clone https://github.com/ahmedmagdyoff/vocavault-api.git
+git clone --recursive https://github.com/ahmedmagdyoff/vocavault.git
 ```
 
----
-
-### Frontend
+If you already cloned it:
 
 ```bash
-npm install
-npm run dev
+git submodule update --init --recursive
 ```
 
 ---
 
-### Backend
+# 📂 Repositories
 
-```bash
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan serve
+| Repository        | Description      |
+| ----------------- | ---------------- |
+| **vocavault-web** | Next.js frontend |
+| **vocavault-api** | Laravel backend  |
+
+---
+
+# 📚 Documentation
+
+Project documentation is available inside the **docs** directory.
+
+```
+docs/
 ```
 
 ---
 
-## 🚀 Deployment
-
-The project is automatically deployed using GitHub Actions.
-
-Deployment flow:
-
-```
-
-Push
-↓
-GitHub Actions
-↓
-SSH
-↓
-VPS
-↓
-Build
-↓
-PM2 Restart
-
-```
-
----
-
-## 🗺 Roadmap
+# 🗺 Roadmap
 
 - [x] Authentication
-- [x] Video Lessons
 - [x] Vocabulary Management
+- [x] Video Lessons
+- [x] Categories
 - [x] Word Forms
 - [x] Automatic Deployment
 - [ ] Quiz System
-- [ ] Spaced Repetition
 - [ ] Progress Tracking
-- [ ] Admin Dashboard
 - [ ] Mobile Application
+- [ ] AI Features
 
 ---
 
-## 🤝 Contributing
+# 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome.
+Contributions are welcome.
 
-Feel free to open an Issue or submit a Pull Request.
+Please open an Issue before submitting large changes.
 
 ---
 
-## 📄 License
+# 📄 License
 
 This project is licensed under the MIT License.
