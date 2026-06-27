@@ -2,6 +2,13 @@
 
 # 📚 VocaVault
 
+[![Frontend](https://img.shields.io/badge/Frontend-Next.js%2016-black?logo=next.js)](https://github.com/ahmedmagdyoff/vocavault-web)
+[![Backend](https://img.shields.io/badge/Backend-Laravel%2012-red?logo=laravel)](https://github.com/ahmedmagdyoff/vocavault-api)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![PHP](https://img.shields.io/badge/PHP-8.x-777BB4?logo=php&logoColor=white)](https://www.php.net/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 ### Learn English vocabulary through real videos.
 
 An open-source English vocabulary learning platform built with **Next.js**, **Laravel**, and **MySQL**.
