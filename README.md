@@ -1,3 +1,4 @@
+````md
 <div align="center">
 
 # 📚 VocaVault
@@ -13,56 +14,22 @@
 
 An open-source English vocabulary learning platform built with **Next.js**, **Laravel**, and **MySQL**.
 
-[🌐 Live Demo](https://vocavault.ahmedmagdy.cloud) •
+[🌍 Live Demo](https://vocavault.ahmedmagdy.cloud) •
 [⚙️ API](https://api.vocavault.ahmedmagdy.cloud)
 
 </div>
 
 ---
 
-## 📖 About
+# 📖 About
 
-VocaVault is an open-source platform that helps learners build their English vocabulary using real-world videos, categorized words, and structured word forms.
+VocaVault is an open-source English vocabulary learning platform that helps learners build their vocabulary through real-world videos, categorized words, and structured word forms.
 
-The project is split into independent repositories:
+The project is organized into three repositories:
 
-- 🖥 **Frontend** (Next.js)
+- 🌐 **Frontend** (Next.js)
 - ⚙️ **Backend API** (Laravel)
 - 📚 **Documentation**
-
----
-
-# 📦 Repository Structure
-
-```
-VocaVault
-│
-├── docs/
-│
-├── vocavault-web/
-│   └── Next.js Frontend
-│
-└── vocavault-api/
-    └── Laravel REST API
-```
-
----
-
-# 🏗 Architecture
-
-```
-             Browser
-                 │
-                 ▼
-         Next.js Frontend
-                 │
-             REST API
-                 ▼
-          Laravel Backend
-                 │
-                 ▼
-               MySQL
-```
 
 ---
 
@@ -112,7 +79,7 @@ VocaVault
 
 # 🚀 Getting Started
 
-Clone the repository.
+Clone the repository with submodules.
 
 ```bash
 git clone --recursive https://github.com/ahmedmagdyoff/vocavault.git
@@ -126,20 +93,54 @@ git submodule update --init --recursive
 
 ---
 
-# 📂 Repositories
+# 📁 Project Structure
+
+```text
+VocaVault/
+│
+├── docs/
+│
+├── vocavault-web/
+│   └── Next.js Frontend
+│
+└── vocavault-api/
+    └── Laravel REST API
+```
+
+---
+
+# 🏗 Architecture
+
+```text
+Browser
+    │
+    ▼
+Next.js Frontend
+    │
+REST API
+    ▼
+Laravel Backend
+    │
+    ▼
+MySQL
+```
+
+---
+
+# 📂 Related Repositories
 
 | Repository        | Description      |
 | ----------------- | ---------------- |
-| **vocavault-web** | Next.js frontend |
-| **vocavault-api** | Laravel backend  |
+| **VocaVault Web** | Next.js Frontend |
+| **VocaVault API** | Laravel Backend  |
 
 ---
 
 # 📚 Documentation
 
-Project documentation is available inside the **docs** directory.
+Documentation is available inside the **docs/** directory.
 
-```
+```text
 docs/
 ```
 
@@ -170,4 +171,5 @@ Please open an Issue before submitting large changes.
 
 # 📄 License
 
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.
+````
