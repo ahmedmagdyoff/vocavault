@@ -1,4 +1,3 @@
-````md
 <div align="center">
 
 # 📚 VocaVault
@@ -172,4 +171,3 @@ Please open an Issue before submitting large changes.
 # 📄 License
 
 This project is licensed under the **MIT License**.
-````
